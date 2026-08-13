@@ -11,7 +11,6 @@
 | Tinni Bonik | 242-115-115 | Debugger |
 
 
-Project Structure
 ## 📂 Project Structure
 
 ```text
