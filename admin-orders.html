@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .admin-header h1 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .admin-toolbar {
+            display: flex;
+            gap: var(--spacing-base);
+            flex-wrap: wrap;
+        }
+        
+        .admin-toolbar input {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .admin-toolbar input:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .admin-toolbar select {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            background: var(--canvas);
+            font-size: 14px;
+        }
+        
+        .orders-grid {
+            display: grid;
+            gap: var(--spacing-base);
+        }
+        
+        .order-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--spacing-base);
+            align-items: start;
+        }
+        
+        .order-card .order-main {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .order-card .order-main .order-id {
+            font-weight: var(--font-weight-bold);
+            font-size: 16px;
+        }
+        
+        .order-card .order-main .order-date {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        
+        .order-card .order-main .order-customer {
+            font-size: 14px;
+        }
+        
+        .order-card .order-main .order-items {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .order-card .order-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--spacing-sm);
+        }
+        
+        .order-card .order-right .order-total {
+            font-weight: var(--font-weight-bold);
+            font-size: 18px;
+            color: var(--primary);
+        }
+        
+        .order-status {
+            padding: 0.2rem 0.8rem;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .order-status.processing { background: var(--warning); color: #333; }
+        .order-status.shipped { background: var(--info); color: white; }
+        .order-status.delivered { background: var(--success); color: white; }
+        .order-status.cancelled { background: var(--danger); color: white; }
+        
+        .order-status-select {
+            padding: 0.3rem 0.5rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            background: var(--canvas);
+        }
+        
+        .payment-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .payment-badge.confirmed { background: var(--success); color: white; }
+        .payment-badge.pending { background: var(--warning); color: #333; }
+        
+        .order-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-sm);
+        }
+        
+        .order-actions .btn-sm {
+            padding: 0.3rem 0.6rem;
+            font-size: 11px;
+        }
+        
+        .empty-orders {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--muted);
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal-card {
+            background: var(--canvas);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-card .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .modal-card .modal-header h2 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .modal-card .modal-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        
+        .modal-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--hairline-soft);
+            font-size: 14px;
+        }
+        
+        .modal-card .detail-row .label {
+            color: var(--muted);
+        }
+        
+        @media (max-width: 768px) {
+            .order-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-card .order-right {
+                align-items: flex-start;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: var(--spacing-sm);
+            }
+            
+            .admin-toolbar {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .admin-toolbar input {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab" onclick="window.location.href='admin-dashboard.html'">
+                <span class="tab-icon">📊</span>
+                Dashboard
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-products.html'">
+                <span class="tab-icon">📦</span>
+                Products
+            </div>
+            <div class="top-nav-tab active">
+                <span class="tab-icon">📋</span>
+                Orders
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-users.html'">
+                <span class="tab-icon">👥</span>
+                Users
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='admin-settings.html'">
+                <i class="fas fa-cog"></i>
+            </button>
+            <div class="user-avatar" onclick="if(confirm('Logout?')){localStorage.removeItem('currentUser');window.location.href='index.html';}">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== ORDERS CONTENT ===== -->
+    <div class="container">
+        <div class="admin-header">
+            <h1>📋 Manage Orders</h1>
+            <div class="admin-toolbar">
+                <input type="text" id="searchOrders" placeholder="🔍 Search by Order ID or Email...">
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <select id="paymentFilter">
+                    <option value="all">All Payments</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+        
+        <div class="orders-grid" id="ordersGrid">
+            <div class="empty-orders"><i class="fas fa-spinner fa-spin"></i> Loading orders...</div>
+        </div>
+    </div>
+
+    <!-- ===== ORDER DETAIL MODAL ===== -->
+    <div id="orderModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>📄 Order Details</h2>
+                <button class="close-btn" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div id="orderModalContent"></div>
+        </div>
+    </div>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let allOrders = [];
+
+        function checkAdminAccess() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return false; }
+            if (user.role !== 'admin') { window.location.href = 'index.html'; return false; }
+            return true;
+        }
+
+        async function loadOrders() {
+            if (!checkAdminAccess()) return;
+
+            try {
+                const response = await fetch('api/get-orders.php');
+                const data = await response.json();
+                if (data.success) {
+                    allOrders = data.orders;
+                    renderOrders();
+                } else {
+                    showToast('Error loading orders');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to load orders');
+            }
+        }
+
+        function renderOrders() {
+            const searchTerm = document.getElementById('searchOrders')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+            const paymentFilter = document.getElementById('paymentFilter')?.value || 'all';
+
+            let filtered = allOrders.filter(order => {
+                if (searchTerm && !(order.order_number?.toLowerCase().includes(searchTerm) || 
+                                   order.customer_email?.toLowerCase().includes(searchTerm))) return false;
+                if (statusFilter !== 'all' && order.status !== statusFilter) return false;
+                if (paymentFilter === 'confirmed' && order.payment_confirmed != 1) return false;
+                if (paymentFilter === 'pending' && order.payment_confirmed != 0) return false;
+                return true;
+            });
+
+            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const grid = document.getElementById('ordersGrid');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-orders">
+                        <i class="fas fa-shopping-cart" style="font-size:48px; color: var(--hairline); margin-bottom: var(--spacing-md); display: block;"></i>
+                        <h3>No orders found</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(order => {
+                const statusClass = (order.status || 'processing').toLowerCase();
+                const paymentClass = order.payment_confirmed == 1 ? 'confirmed' : 'pending';
+                const paymentText = order.payment_confirmed == 1 ? '✓ Paid' : '⏳ Pending';
+                
+                let items = order.items;
+                if (typeof items === 'string') {
+                    try { items = JSON.parse(items); } catch(e) { items = []; }
+                }
+
+                return `
+                    <div class="order-card">
+                        <div class="order-main">
+                            <div>
+                                <span class="order-id">#${escapeHtml(order.order_number || order.id)}</span>
+                                <span class="order-date">${formatDate(order.created_at)}</span>
+                            </div>
+                            <div class="order-customer">
+                                <strong>${escapeHtml(order.customer_name || 'Guest')}</strong>
+                                <span style="color: var(--muted);"> • ${escapeHtml(order.customer_email || '')}</span>
+                                ${order.customer_phone ? `<span style="color: var(--muted);"> • ${escapeHtml(order.customer_phone)}</span>` : ''}
+                            </div>
+                            <div class="order-items">
+                                ${items?.map(item => `${escapeHtml(item.product_name || item.name)} x ${item.quantity}`).join(', ') || 'No items'}
+                            </div>
+                            <div class="order-actions">
+                                <select class="order-status-select" onchange="updateStatus('${order.id}', this.value)">
+                                    <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                                <button class="btn btn-secondary btn-sm" onclick="viewOrder('${order.id}')"><i class="fas fa-eye"></i></button>
+                                ${order.payment_confirmed == 0 && order.status !== 'Cancelled' ? 
+                                    `<button class="btn btn-success btn-sm" onclick="confirmPayment('${order.id}')"><i class="fas fa-check"></i> Confirm Payment</button>` : ''
+                                }
+                            </div>
+                        </div>
+                        <div class="order-right">
+                            <div class="order-total">৳${parseFloat(order.total || 0).toLocaleString()}</div>
+                            <span class="order-status ${statusClass}">${order.status || 'Processing'}</span>
+                            <span class="payment-badge ${paymentClass}">${paymentText}</span>
+                            ${order.tracking_number ? `<span style="font-size:12px; color: var(--muted);">📦 ${escapeHtml(order.tracking_number)}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateStatus(orderId, status) {
+            try {
+                const response = await fetch('api/update-order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: orderId, status })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(`Order status updated to ${status}`);
+                    loadOrders();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to update status');
+            }
+        }
+
+        async function confirmPayment(orderId) {
+            if (!confirm('Confirm payment received for this order?')) return;
+            try {
+                const response = await fetch('api/update-order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: orderId, payment_confirmed: 1 })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Payment confirmed!');
+                    loadOrders();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to confirm payment');
+            }
+        }
+
+        function viewOrder(orderId) {
+            const order = allOrders.find(o => o.id == orderId);
+            if (!order) return;
+
+            let items = order.items;
+            if (typeof items === 'string') {
+                try { items = JSON.parse(items); } catch(e) { items = []; }
+            }
+
+            const modal = document.getElementById('orderModal');
+            const content = document.getElementById('orderModalContent');
+
+            content.innerHTML = `
+                <div class="detail-row"><span class="label">Order ID</span><span><strong>#${escapeHtml(order.order_number || order.id)}</strong></span></div>
+                <div class="detail-row"><span class="label">Date</span><span>${formatDate(order.created_at)}</span></div>
+                <div class="detail-row"><span class="label">Status</span><span>${order.status || 'Processing'}</span></div>
+                <div class="detail-row"><span class="label">Payment</span><span>${order.payment_confirmed == 1 ? '✅ Confirmed' : '⏳ Pending'}</span></div>
+                <div class="detail-row"><span class="label">Method</span><span>${order.payment_method || 'N/A'}</span></div>
+                ${order.transaction_id ? `<div class="detail-row"><span class="label">Transaction ID</span><span>${escapeHtml(order.transaction_id)}</span></div>` : ''}
+                ${order.tracking_number ? `<div class="detail-row"><span class="label">Tracking</span><span>${escapeHtml(order.tracking_number)}</span></div>` : ''}
+                <div style="margin: var(--spacing-md) 0;">
+                    <strong>Customer:</strong>
+                    <div style="margin-top: var(--spacing-xs); font-size:14px;">
+                        ${escapeHtml(order.customer_name || 'Guest')}<br>
+                        ${escapeHtml(order.customer_email || '')}<br>
+                        ${escapeHtml(order.customer_phone || '')}<br>
+                        ${escapeHtml(order.customer_address || '')}
+                    </div>
+                </div>
+                <div style="margin: var(--spacing-md) 0;">
+                    <strong>Items:</strong>
+                    ${items?.map(item => `
+                        <div style="display:flex; justify-content:space-between; padding: var(--spacing-xs) 0; border-bottom: 1px solid var(--hairline-soft); font-size:14px;">
+                            <span>${escapeHtml(item.product_name || item.name)} x ${item.quantity}</span>
+                            <span>৳${(parseFloat(item.product_price || item.price) * item.quantity).toLocaleString()}</span>
+                        </div>
+                    `).join('') || '<p style="color:var(--muted);">No items</p>'}
+                </div>
+                <div class="detail-row" style="font-weight:var(--font-weight-bold); font-size:16px; border-bottom:none; padding-top:var(--spacing-md);">
+                    <span>Total</span>
+                    <span style="color:var(--primary);">৳${parseFloat(order.total || 0).toLocaleString()}</span>
+                </div>
+                <button class="btn btn-secondary" onclick="closeOrderModal()" style="margin-top: var(--spacing-md); width:100%;">Close</button>
+            `;
+            modal.classList.add('open');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('open');
+        }
+
+        function resetFilters() {
+            document.getElementById('searchOrders').value = '';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('paymentFilter').value = 'all';
+            renderOrders();
+        }
+
+        // Event listeners
+        document.getElementById('searchOrders')?.addEventListener('keyup', renderOrders);
+        document.getElementById('statusFilter')?.addEventListener('change', renderOrders);
+        document.getElementById('paymentFilter')?.addEventListener('change', renderOrders);
+
+        window.updateStatus = updateStatus;
+        window.confirmPayment = confirmPayment;
+        window.viewOrder = viewOrder;
+        window.closeOrderModal = closeOrderModal;
+        window.resetFilters = resetFilters;
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+</body>
+</html>

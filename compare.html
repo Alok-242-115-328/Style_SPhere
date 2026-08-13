@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .compare-table-wrap {
+            animation: fadeInUp 0.6s ease forwards;
+            animation-delay: 0.2s;
+        }
+        
+        .product-cell {
+            animation: slideIn 0.5s ease forwards;
+        }
+        
+        .product-cell:hover .product-image {
+            transform: scale(1.05);
+            transition: transform 0.5s ease;
+        }
+        
+        .product-cell .product-image {
+            transition: transform 0.5s ease;
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,56,92,0.35);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .add-cell {
+            transition: all 0.3s ease;
+        }
+        
+        .add-cell:hover {
+            transform: scale(1.02);
+            background: #f7f7f7;
+        }
+        
+        .add-cell i {
+            transition: transform 0.3s ease;
+        }
+        
+        .add-cell:hover i {
+            transform: scale(1.2) rotate(90deg);
+        }
+        
+        .remove-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .remove-btn:hover {
+            transform: scale(1.2);
+            color: #ef4444 !important;
+        }
+        
+        .stock-badge {
+            transition: all 0.3s ease;
+        }
+        
+        .stock-badge:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===== COMPARE STYLES ===== */
+        .compare-header {
+            padding: 32px 0 24px;
+        }
+        
+        .compare-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #222222;
+        }
+        
+        .compare-header p {
+            color: #6a6a6a;
+            font-size: 16px;
+        }
+        
+        .compare-table-wrap {
+            overflow-x: auto;
+            padding-bottom: 32px;
+        }
+        
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .compare-table th,
+        .compare-table td {
+            padding: 16px 24px;
+            text-align: center;
+            border-bottom: 1px solid #ebebeb;
+            vertical-align: middle;
+        }
+        
+        .compare-table th {
+            background: #f7f7f7;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: left;
+            color: #222222;
+        }
+        
+        .compare-table .feature-label {
+            font-weight: 600;
+            color: #6a6a6a;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .compare-table .product-cell {
+            min-width: 200px;
+        }
+        
+        .compare-table .product-cell .product-image {
+            width: 100%;
+            max-width: 150px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+        
+        .compare-table .product-cell .product-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .compare-table .product-cell .product-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #222222;
+            cursor: pointer;
+        }
+        
+        .compare-table .product-cell .product-name:hover {
+            color: #ff385c;
+        }
+        
+        .compare-table .product-cell .product-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: #ff385c;
+        }
+        
+        .compare-table .product-cell .remove-btn {
+            background: none;
+            border: none;
+            color: #6a6a6a;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            padding: 4px 8px;
+        }
+        
+        .compare-table .product-cell .remove-btn:hover {
+            color: #ef4444;
+            transform: scale(1.2);
+        }
+        
+        .compare-table .add-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 24px;
+            border: 2px dashed #dddddd;
+        }
+        
+        .compare-table .add-cell:hover {
+            background: #f7f7f7;
+            border-color: #ff385c;
+            transform: scale(1.02);
+        }
+        
+        .compare-table .add-cell i {
+            font-size: 32px;
+            color: #ff385c;
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .compare-table .add-cell:hover i {
+            transform: scale(1.2) rotate(90deg);
+        }
+        
+        .compare-table .add-cell span {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+        
+        .compare-table .stock-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .stock-badge.in-stock { background: #10b981; color: white; }
+        .stock-badge.low-stock { background: #f59e0b; color: #333; }
+        .stock-badge.out-of-stock { background: #ef4444; color: white; }
+        
+        .stock-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .empty-compare {
+            text-align: center;
+            padding: 48px 0;
+        }
+        
+        .empty-compare i {
+            font-size: 64px;
+            color: #dddddd;
+            margin-bottom: 24px;
+        }
+        
+        .empty-compare h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #222222;
+        }
+        
+        .empty-compare p {
+            color: #6a6a6a;
+            margin-bottom: 24px;
+        }
+        
+        .empty-compare .btn {
+            padding: 12px 32px;
+            border-radius: 9999px;
+            background: #ff385c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            display: inline-block;
+        }
+        
+        .empty-compare .btn:hover {
+            background: #e00b41;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,56,92,0.3);
+        }
+        
+        .btn-primary {
+            background: #ff385c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+        
+        .btn-primary:hover {
+            background: #e00b41;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: #6a6a6a;
+        }
+        
+        .loading i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 16px;
+            color: #ff385c;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            .compare-header h1 {
+                font-size: 24px;
+            }
+            .compare-table th,
+            .compare-table td {
+                padding: 12px;
+                font-size: 13px;
+            }
+            .compare-table .product-cell .product-image {
+                max-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVIGATION PLACEHOLDER ===== -->
+    <div id="navigation-placeholder"></div>
+
+    <!-- ===== COMPARE CONTENT ===== -->
+    <div class="container">
+        <div class="compare-header animate-in">
+            <h1>📊 Compare Products</h1>
+            <p>Compare up to 4 products side by side</p>
+        </div>
+        
+        <div id="compareContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading compare data...</div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: #929292; font-size: 14px;">Premium fashion marketplace curated for style enthusiasts.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: #929292; font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: #929292; font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="js/utils.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // ============================================
+        // COMPARE.JS - COMPLETE FIXED VERSION
+        // ============================================
+
+        var compareList = [];
+        var products = [];
+        var currentUser = null;
+
+        // --- Helper Functions ---
+        function getCurrentUser() {
+            var userJson = localStorage.getItem('currentUser');
+            if (!userJson) return null;
+            try { return JSON.parse(userJson); } catch(e) { return null; }
+        }
+
+        function showToast(message, type) {
+            type = type || 'success';
+            var existing = document.querySelectorAll('.toast');
+            for (var i = 0; i < existing.length; i++) { existing[i].remove(); }
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            var bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#ff385c';
+            toast.style.cssText = 'position:fixed; bottom:24px; right:24px; background:' + bgColor + '; color:white; padding:14px 24px; border-radius:50px; z-index:9999; font-family:Inter,sans-serif; font-size:14px; font-weight:500; box-shadow:0 8px 32px rgba(0,0,0,0.15); max-width:400px;';
+            toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle') + '" style="margin-right:10px;"></i> ' + message;
+            document.body.appendChild(toast);
+            setTimeout(function() {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 3500);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function requireLogin(actionName, redirectToLogin) {
+            redirectToLogin = (redirectToLogin !== undefined) ? redirectToLogin : true;
+            var user = getCurrentUser();
+            if (!user) {
+                showToast('⚠️ Please login to ' + actionName, 'error');
+                if (redirectToLogin) {
+                    setTimeout(function() { window.location.href = 'login.html'; }, 1500);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        function updateNavCartCount() {
+            var count = 0;
+            try {
+                var cart = JSON.parse(localStorage.getItem('attar_cart')) || [];
+                for (var i = 0; i < cart.length; i++) {
+                    count += (cart[i].quantity || 1);
+                }
+            } catch(e) {}
+            var el = document.getElementById('cartCountNav');
+            if (el) el.textContent = count;
+        }
+
+        function updateNavWishlistCount() {
+            var count = 0;
+            try {
+                var wishlist = JSON.parse(localStorage.getItem('attar_wishlist')) || [];
+                count = wishlist.length;
+            } catch(e) {}
+            var el = document.getElementById('wishlistCountNav');
+            if (el) el.textContent = count;
+        }
+
+        // --- Load Compare Data ---
+        function loadCompareData() {
+            currentUser = getCurrentUser();
+            if (!currentUser) {
+                showToast('Please login to compare products', 'error');
+                setTimeout(function() { window.location.href = 'login.html'; }, 1500);
+                return;
+            }
+
+            compareList = JSON.parse(localStorage.getItem('attar_compare')) || [];
+
+            fetch('api/get-products.php')
+                .then(function(response) { 
+                    if (!response.ok) throw new Error('API not found');
+                    return response.json(); 
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        products = data.products;
+                    } else {
+                        useFallbackProducts();
+                    }
+                    renderCompare();
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    useFallbackProducts();
+                    renderCompare();
+                });
+        }
+
+        function useFallbackProducts() {
+            products = [
+                { id: 1, name: 'Premium Silk Blouse', brand: 'Luxury Collection', category: 'women', price: 2990, stock: 50, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Silk+Blouse', ratings: 4.8, reviews: 12, description: 'Elegant silk blouse with a modern cut.' },
+                { id: 2, name: 'Wool Blend Coat', brand: 'Urban Classic', category: 'women', price: 4890, stock: 30, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Wool+Coat', ratings: 4.6, reviews: 8, description: 'Sophisticated wool blend coat.' },
+                { id: 3, name: 'Leather Ankle Boots', brand: 'Footwear Co', category: 'shoes', price: 3990, stock: 45, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Leather+Boots', ratings: 4.9, reviews: 15, description: 'Premium leather ankle boots.' },
+                { id: 4, name: 'Cashmere Scarf', brand: 'Luxury Collection', category: 'accessories', price: 1890, stock: 60, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Cashmere+Scarf', ratings: 4.7, reviews: 10, description: 'Luxurious cashmere scarf.' }
+            ];
+            console.log('Using fallback products');
+        }
+
+        // --- Render Compare ---
+        function renderCompare() {
+            var container = document.getElementById('compareContainer');
+            var compareProducts = [];
+            for (var i = 0; i < products.length; i++) {
+                for (var j = 0; j < compareList.length; j++) {
+                    if (products[i].id === compareList[j]) {
+                        compareProducts.push(products[i]);
+                        break;
+                    }
+                }
+            }
+
+            if (compareList.length === 0 || compareProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-compare">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>No products to compare</h3>
+                        <p>Add products from the shop page to compare them here</p>
+                        <a href="shop.html" class="btn">Browse Products →</a>
+                    </div>
+                `;
+                return;
+            }
+
+            var features = [
+                { label: 'Brand', field: 'brand' },
+                { label: 'Category', field: 'category' },
+                { label: 'Price', field: 'price', formatter: function(v) { return '৳' + parseFloat(v).toLocaleString(); } },
+                { label: 'Stock', field: 'stock', formatter: function(v) {
+                    if (v > 10) return '<span class="stock-badge in-stock">' + v + ' in stock</span>';
+                    if (v > 0) return '<span class="stock-badge low-stock">Only ' + v + ' left</span>';
+                    return '<span class="stock-badge out-of-stock">Out of stock</span>';
+                }},
+                { label: 'Rating', field: 'ratings', formatter: function(v, p) { return '⭐ ' + (v || 0) + '/5 (' + (p.reviews || 0) + ' reviews)'; } },
+                { label: 'Description', field: 'description', formatter: function(v) { return v ? v.substring(0, 80) + '...' : '—'; } },
+                { label: 'Action', isAction: true }
+            ];
+
+            var tableRows = '';
+            for (var f = 0; f < features.length; f++) {
+                var feature = features[f];
+                var row = '<tr><td class="feature-label">' + feature.label + '</td>';
+                
+                for (var p = 0; p < compareProducts.length; p++) {
+                    var product = compareProducts[p];
+                    if (feature.isAction) {
+                        row += '<td>';
+                        if (product.stock > 0) {
+                            row += '<button class="btn btn-primary" onclick="addToCart(' + product.id + ')">Add to Cart</button>';
+                        } else {
+                            row += '<button class="btn btn-secondary" onclick="showStockAlert(' + product.id + ')">Notify Me</button>';
+                        }
+                        row += '</td>';
+                    } else {
+                        var value = product[feature.field] || '—';
+                        if (feature.formatter) {
+                            value = feature.formatter(value, product);
+                        }
+                        row += '<td>' + value + '</td>';
+                    }
+                }
+                
+                if (compareProducts.length < 4) {
+                    row += '<td></td>';
+                }
+                row += '</tr>';
+                tableRows += row;
+            }
+
+            // Build header
+            var headerCells = '<th style="text-align:left; min-width:120px;">Features</th>';
+            for (var p = 0; p < compareProducts.length; p++) {
+                var product = compareProducts[p];
+                var imageUrl = product.image || 'https://placehold.co/150x150/e8ddd3/8B5E3C?text=StyleSphere';
+                headerCells += `
+                    <th class="product-cell">
+                        <img class="product-image" src="${imageUrl}" onclick="viewProduct(${product.id})" onerror="this.src='https://placehold.co/150x150/e8ddd3/8B5E3C?text=StyleSphere'">
+                        <div class="product-name" onclick="viewProduct(${product.id})">${escapeHtml(product.name)}</div>
+                        <div class="product-price">৳${parseFloat(product.price).toLocaleString()}</div>
+                        <button class="remove-btn" onclick="removeFromCompare(${product.id})"><i class="fas fa-times"></i> Remove</button>
+                    </th>
+                `;
+            }
+
+            if (compareProducts.length < 4) {
+                headerCells += `
+                    <th>
+                        <div class="add-cell" onclick="addMore()">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Product</span>
+                        </div>
+                    </th>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="compare-table-wrap">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>${headerCells}</tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // --- Add More Products ---
+        function addMore() {
+            var available = [];
+            for (var i = 0; i < products.length; i++) {
+                var exists = false;
+                for (var j = 0; j < compareList.length; j++) {
+                    if (products[i].id === compareList[j]) { exists = true; break; }
+                }
+                if (!exists) {
+                    available.push(products[i]);
+                }
+            }
+            
+            if (available.length === 0) {
+                showToast('No more products to add!', 'error');
+                return;
+            }
+
+            var options = '';
+            for (var k = 0; k < available.length; k++) {
+                options += (k + 1) + '. ' + available[k].name + ' - ৳' + parseFloat(available[k].price).toLocaleString() + '\n';
+            }
+            var selection = prompt('Select a product to add (1-' + available.length + '):\n\n' + options);
+            
+            if (selection && !isNaN(selection) && selection >= 1 && selection <= available.length) {
+                var selected = available[selection - 1];
+                var exists = false;
+                for (var m = 0; m < compareList.length; m++) {
+                    if (compareList[m] === selected.id) { exists = true; break; }
+                }
+                if (!exists) {
+                    compareList.push(selected.id);
+                    localStorage.setItem('attar_compare', JSON.stringify(compareList));
+                    renderCompare();
+                    showToast(selected.name + ' added to comparison');
+                }
+            }
+        }
+
+        // --- Remove From Compare ---
+        function removeFromCompare(productId) {
+            var newList = [];
+            for (var i = 0; i < compareList.length; i++) {
+                if (compareList[i] !== productId) {
+                    newList.push(compareList[i]);
+                }
+            }
+            compareList = newList;
+            localStorage.setItem('attar_compare', JSON.stringify(compareList));
+            renderCompare();
+            showToast('Removed from comparison');
+        }
+
+        // --- Add to Cart ---
+        function addToCart(productId) {
+            if (!requireLogin('add items to cart')) return;
+            
+            var product = null;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id === productId) { product = products[i]; break; }
+            }
+            if (!product) return;
+            if (product.stock === 0) {
+                showToast('Out of stock!', 'error');
+                return;
+            }
+
+            var cart = JSON.parse(localStorage.getItem('attar_cart')) || [];
+            var item = null;
+            for (var j = 0; j < cart.length; j++) {
+                if (cart[j].id === productId) { item = cart[j]; break; }
+            }
+            if (item) {
+                if (item.quantity < product.stock) {
+                    item.quantity++;
+                } else {
+                    showToast('Not enough stock!', 'error');
+                    return;
+                }
+            } else {
+                cart.push({ id: productId, quantity: 1 });
+            }
+            localStorage.setItem('attar_cart', JSON.stringify(cart));
+            updateNavCartCount();
+            showToast(product.name + ' added to cart!');
+        }
+
+        // --- Show Stock Alert ---
+        function showStockAlert(productId) {
+            var product = null;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id === productId) { product = products[i]; break; }
+            }
+            if (!product) return;
+            var email = prompt('Notify me when "' + product.name + '" is back in stock:\n\nEnter your email:');
+            if (email && email.indexOf('@') !== -1) {
+                var waitlist = JSON.parse(localStorage.getItem('stock_waitlist')) || [];
+                waitlist.push({ 
+                    productId: product.id, 
+                    productName: product.name, 
+                    email: email, 
+                    date: new Date().toISOString(), 
+                    notified: false 
+                });
+                localStorage.setItem('stock_waitlist', JSON.stringify(waitlist));
+                showToast("We'll notify you when " + product.name + " is back!");
+            }
+        }
+
+        // --- View Product ---
+        function viewProduct(id) {
+            localStorage.setItem('viewProductId', id);
+            window.location.href = 'products.html';
+        }
+
+        // --- DOM Ready ---
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCompareData();
+        });
+
+        // --- Expose Globally ---
+        window.addMore = addMore;
+        window.removeFromCompare = removeFromCompare;
+        window.addToCart = addToCart;
+        window.showStockAlert = showStockAlert;
+        window.viewProduct = viewProduct;
+        window.loadCompareData = loadCompareData;
+    </script>
+</body>
+</html>

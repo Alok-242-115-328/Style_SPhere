@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Blog - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .admin-header h1 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .admin-toolbar {
+            display: flex;
+            gap: var(--spacing-base);
+            flex-wrap: wrap;
+        }
+        
+        .admin-toolbar input {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .admin-toolbar select {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            background: var(--canvas);
+            font-size: 14px;
+        }
+        
+        .blog-table-wrap {
+            overflow-x: auto;
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+        }
+        
+        .blog-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        
+        .blog-table th,
+        .blog-table td {
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--hairline-soft);
+        }
+        
+        .blog-table th {
+            background: var(--surface-soft);
+            font-weight: var(--font-weight-semibold);
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .blog-table .blog-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+        
+        .blog-table .status-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .status-badge.published { background: var(--success); color: white; }
+        .status-badge.draft { background: var(--warning); color: #333; }
+        .status-badge.pending { background: var(--info); color: white; }
+        
+        .blog-table .actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+        }
+        
+        .blog-table .actions .btn-sm {
+            padding: 0.3rem 0.6rem;
+            font-size: 11px;
+        }
+        
+        .submissions-section {
+            margin-top: var(--spacing-xl);
+        }
+        
+        .submissions-section h2 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .submission-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-base);
+            border-left: 4px solid var(--warning);
+        }
+        
+        .submission-card .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+            gap: var(--spacing-base);
+        }
+        
+        .submission-card .submission-title {
+            font-weight: var(--font-weight-bold);
+            font-size: 16px;
+        }
+        
+        .submission-card .submission-meta {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        
+        .submission-card .submission-excerpt {
+            color: var(--body);
+            font-size: 14px;
+            margin: var(--spacing-sm) 0;
+        }
+        
+        .submission-card .submission-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal-card {
+            background: var(--canvas);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-card .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .modal-card .modal-header h2 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .modal-card .modal-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        
+        .modal-card .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card .form-group label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .modal-card .form-group input,
+        .modal-card .form-group textarea,
+        .modal-card .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family);
+            font-size: 14px;
+        }
+        
+        .modal-card .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .modal-card .form-actions {
+            display: flex;
+            gap: var(--spacing-base);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .modal-card .form-actions .btn {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-toolbar {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .admin-toolbar input {
+                min-width: auto;
+            }
+            
+            .submission-card .submission-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab" onclick="window.location.href='admin-dashboard.html'">
+                <span class="tab-icon">📊</span>
+                Dashboard
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-products.html'">
+                <span class="tab-icon">📦</span>
+                Products
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-orders.html'">
+                <span class="tab-icon">📋</span>
+                Orders
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-users.html'">
+                <span class="tab-icon">👥</span>
+                Users
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='admin-settings.html'">
+                <i class="fas fa-cog"></i>
+            </button>
+            <div class="user-avatar" onclick="if(confirm('Logout?')){localStorage.removeItem('currentUser');window.location.href='index.html';}">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== BLOG CONTENT ===== -->
+    <div class="container">
+        <div class="admin-header">
+            <h1>📝 Manage Blog</h1>
+            <div class="admin-toolbar">
+                <input type="text" id="searchBlogs" placeholder="🔍 Search posts...">
+                <select id="blogStatusFilter">
+                    <option value="all">All Status</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <button class="btn btn-primary" onclick="openBlogModal()">
+                    <i class="fas fa-plus"></i> New Post
+                </button>
+            </div>
+        </div>
+        
+        <div class="blog-table-wrap">
+            <table class="blog-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Author</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="blogTableBody">
+                    <tr><td colspan="7" style="text-align:center; padding: var(--spacing-xxl); color: var(--muted);">
+                        <i class="fas fa-spinner fa-spin"></i> Loading posts...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="submissions-section">
+            <h2>⏳ Pending Submissions</h2>
+            <div id="pendingSubmissions">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading submissions...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BLOG MODAL ===== -->
+    <div id="blogModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="blogModalTitle">Add Blog Post</h2>
+                <button class="close-btn" onclick="closeBlogModal()">&times;</button>
+            </div>
+            <form id="blogForm" onsubmit="event.preventDefault(); saveBlog();">
+                <input type="hidden" id="blogId">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="blogTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="blogCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="style">👗 Style</option>
+                        <option value="trends">🔥 Trends</option>
+                        <option value="guides">📖 Guides</option>
+                        <option value="sustainable">🌱 Sustainable</option>
+                        <option value="news">📰 News</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="blogAuthor" placeholder="Author name">
+                </div>
+                <div class="form-group">
+                    <label>Excerpt *</label>
+                    <textarea id="blogExcerpt" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Content *</label>
+                    <textarea id="blogContent" rows="8" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="blogImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" id="blogTags" placeholder="e.g., fashion, style, guide">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="blogStatus">
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Post</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeBlogModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let allBlogs = [];
+        let allSubmissions = [];
+
+        function checkAdminAccess() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return false; }
+            if (user.role !== 'admin') { window.location.href = 'index.html'; return false; }
+            return true;
+        }
+
+        async function loadBlogData() {
+            if (!checkAdminAccess()) return;
+
+            try {
+                const [blogsRes, subsRes] = await Promise.all([
+                    fetch('api/get-blogs.php'),
+                    fetch('api/get-blog-submissions.php?status=pending')
+                ]);
+
+                const blogsData = await blogsRes.json();
+                const subsData = await subsRes.json();
+
+                if (blogsData.success) allBlogs = blogsData.blogs;
+                if (subsData.success) allSubmissions = subsData.submissions;
+
+                renderBlogs();
+                renderSubmissions();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to load blog data');
+            }
+        }
+
+        function renderBlogs() {
+            const searchTerm = document.getElementById('searchBlogs')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('blogStatusFilter')?.value || 'all';
+
+            let filtered = allBlogs.filter(blog => {
+                if (searchTerm && !blog.title.toLowerCase().includes(searchTerm)) return false;
+                if (statusFilter !== 'all' && blog.status !== statusFilter) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById('blogTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:var(--spacing-xxl); color: var(--muted);">No blog posts found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(blog => `
+                <tr>
+                    <td><img class="blog-img" src="${blog.image || 'https://placehold.co/60x60/e8ddd3/8B5E3C?text=Blog'}" onerror="this.src='https://placehold.co/60x60/e8ddd3/8B5E3C?text=Blog'"></td>
+                    <td><strong>${escapeHtml(blog.title)}</strong><br><small style="color:var(--muted);">${blog.excerpt?.substring(0, 60)}...</small></td>
+                    <td>${blog.category || '—'}</td>
+                    <td>${escapeHtml(blog.author || 'Admin')}</td>
+                    <td>${formatDate(blog.created_at)}</td>
+                    <td><span class="status-badge ${blog.status}">${blog.status || 'draft'}</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editBlog(${blog.id})"><i class="fas fa-edit"></i></button>
+                            ${blog.status === 'draft' ? 
+                                `<button class="btn btn-success btn-sm" onclick="publishBlog(${blog.id})"><i class="fas fa-check"></i></button>` :
+                                `<button class="btn btn-warning btn-sm" onclick="unpublishBlog(${blog.id})"><i class="fas fa-pause"></i></button>`
+                            }
+                            <button class="btn btn-danger btn-sm" onclick="deleteBlog(${blog.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderSubmissions() {
+            const container = document.getElementById('pendingSubmissions');
+            if (allSubmissions.length === 0) {
+                container.innerHTML = '<p style="color: var(--muted); padding: var(--spacing-md);">No pending submissions.</p>';
+                return;
+            }
+
+            container.innerHTML = allSubmissions.map(sub => `
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">${escapeHtml(sub.title)}</div>
+                            <div class="submission-meta">
+                                Submitted by: <strong>${escapeHtml(sub.user_name || sub.user_email)}</strong> • ${formatDate(sub.created_at)}
+                            </div>
+                        </div>
+                        <div class="submission-actions">
+                            <button class="btn btn-success btn-sm" onclick="approveSubmission(${sub.id})"><i class="fas fa-check"></i> Approve</button>
+                            <button class="btn btn-danger btn-sm" onclick="rejectSubmission(${sub.id})"><i class="fas fa-times"></i> Reject</button>
+                        </div>
+                    </div>
+                    <div class="submission-excerpt">${escapeHtml(sub.excerpt?.substring(0, 150))}...</div>
+                </div>
+            `).join('');
+        }
+
+        function openBlogModal(blog = null) {
+            document.getElementById('blogModal').classList.add('open');
+            document.getElementById('blogModalTitle').innerText = blog ? 'Edit Blog Post' : 'Add Blog Post';
+            document.getElementById('blogId').value = blog?.id || '';
+            document.getElementById('blogTitle').value = blog?.title || '';
+            document.getElementById('blogCategory').value = blog?.category || '';
+            document.getElementById('blogAuthor').value = blog?.author || '';
+            document.getElementById('blogExcerpt').value = blog?.excerpt || '';
+            document.getElementById('blogContent').value = blog?.content || '';
+            document.getElementById('blogImage').value = blog?.image || '';
+            document.getElementById('blogTags').value = blog?.tags || '';
+            document.getElementById('blogStatus').value = blog?.status || 'draft';
+        }
+
+        function closeBlogModal() {
+            document.getElementById('blogModal').classList.remove('open');
+            document.getElementById('blogForm').reset();
+        }
+
+        function editBlog(id) {
+            const blog = allBlogs.find(b => b.id === id);
+            if (blog) openBlogModal(blog);
+        }
+
+        async function saveBlog() {
+            const id = document.getElementById('blogId').value;
+            const data = {
+                title: document.getElementById('blogTitle').value.trim(),
+                category: document.getElementById('blogCategory').value,
+                author: document.getElementById('blogAuthor').value.trim(),
+                excerpt: document.getElementById('blogExcerpt').value.trim(),
+                content: document.getElementById('blogContent').value.trim(),
+                image: document.getElementById('blogImage').value.trim(),
+                tags: document.getElementById('blogTags').value.trim(),
+                status: document.getElementById('blogStatus').value
+            };
+
+            if (!data.title || !data.category || !data.excerpt || !data.content) {
+                showToast('Please fill all required fields');
+                return;
+            }
+
+            try {
+                const url = id ? 'api/update-blog.php' : 'api/add-blog.php';
+                const method = id ? 'PUT' : 'POST';
+                const body = id ? { ...data, id } : data;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(result.message);
+                    closeBlogModal();
+                    loadBlogData();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to save blog');
+            }
+        }
+
+        async function publishBlog(id) {
+            await updateBlogStatus(id, 'published');
+        }
+
+        async function unpublishBlog(id) {
+            await updateBlogStatus(id, 'draft');
+        }
+
+        async function updateBlogStatus(id, status) {
+            try {
+                const response = await fetch('api/update-blog.php', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(`Post ${status}`);
+                    loadBlogData();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to update status');
+            }
+        }
+
+        async function deleteBlog(id) {
+            if (!confirm('Delete this blog post permanently?')) return;
+            try {
+                const response = await fetch('api/delete-blog.php', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Blog deleted');
+                    loadBlogData();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to delete blog');
+            }
+        }
+
+        async function approveSubmission(id) {
+            if (!confirm('Approve this submission?')) return;
+            try {
+                const response = await fetch('api/approve-blog.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ submission_id: id, action: 'approve' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Submission approved and published!');
+                    loadBlogData();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to approve submission');
+            }
+        }
+
+        async function rejectSubmission(id) {
+            if (!confirm('Reject this submission?')) return;
+            try {
+                const response = await fetch('api/approve-blog.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ submission_id: id, action: 'reject' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Submission rejected');
+                    loadBlogData();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to reject submission');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchBlogs')?.addEventListener('keyup', renderBlogs);
+        document.getElementById('blogStatusFilter')?.addEventListener('change', renderBlogs);
+
+        window.openBlogModal = openBlogModal;
+        window.closeBlogModal = closeBlogModal;
+        window.editBlog = editBlog;
+        window.saveBlog = saveBlog;
+        window.publishBlog = publishBlog;
+        window.unpublishBlog = unpublishBlog;
+        window.deleteBlog = deleteBlog;
+        window.approveSubmission = approveSubmission;
+        window.rejectSubmission = rejectSubmission;
+
+        document.addEventListener('DOMContentLoaded', loadBlogData);
+    </script>
+</body>
+</html>

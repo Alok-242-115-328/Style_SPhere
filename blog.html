@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Blog - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .blog-header {
+            text-align: center;
+            padding: var(--spacing-xl) 0 var(--spacing-lg);
+        }
+        
+        .blog-header h1 {
+            font-size: 36px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .blog-header p {
+            color: var(--muted);
+            font-size: 16px;
+            max-width: 500px;
+            margin: var(--spacing-sm) auto 0;
+        }
+        
+        .blog-search {
+            max-width: 500px;
+            margin: var(--spacing-lg) auto;
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .blog-search input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-family: var(--font-family);
+        }
+        
+        .blog-search input:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .blog-categories {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .blog-categories .cat-btn {
+            padding: 0.4rem 1.2rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-full);
+            background: var(--canvas);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: var(--font-weight-medium);
+            transition: all 0.2s ease;
+            color: var(--muted);
+        }
+        
+        .blog-categories .cat-btn:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+        
+        .blog-categories .cat-btn.active {
+            background: var(--ink);
+            color: var(--canvas);
+            border-color: var(--ink);
+        }
+        
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-xl);
+            padding: var(--spacing-lg) 0 var(--spacing-xl);
+        }
+        
+        .blog-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .blog-card .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .blog-card .card-content {
+            padding: var(--spacing-lg);
+        }
+        
+        .blog-card .card-meta {
+            display: flex;
+            gap: var(--spacing-base);
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .blog-card .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .blog-card .card-title {
+            font-size: 18px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.3;
+        }
+        
+        .blog-card .card-excerpt {
+            color: var(--body);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .blog-card .read-more {
+            color: var(--primary);
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+        }
+        
+        .blog-card .read-more i {
+            transition: transform 0.2s ease;
+        }
+        
+        .blog-card:hover .read-more i {
+            transform: translateX(4px);
+        }
+        
+        .submit-blog-btn {
+            position: fixed;
+            bottom: var(--spacing-xl);
+            right: var(--spacing-xl);
+            z-index: 100;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg) 0;
+        }
+        
+        .pagination .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--hairline);
+            background: var(--canvas);
+            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+            transition: all 0.2s ease;
+        }
+        
+        .pagination .page-btn:hover {
+            border-color: var(--ink);
+        }
+        
+        .pagination .page-btn.active {
+            background: var(--ink);
+            color: var(--canvas);
+            border-color: var(--ink);
+        }
+        
+        @media (max-width: 768px) {
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .blog-header h1 {
+                font-size: 28px;
+            }
+            
+            .submit-blog-btn {
+                bottom: var(--spacing-base);
+                right: var(--spacing-base);
+            }
+            
+            .submit-blog-btn .btn {
+                padding: 0.6rem 1rem;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab active">
+                <span class="tab-icon">👗</span>
+                Fashion
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">🎨</span>
+                Collections
+                <span class="new-tag">NEW</span>
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">✨</span>
+                Styling
+                <span class="new-tag">NEW</span>
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='wishlist.html'">
+                <i class="far fa-heart"></i>
+                <span id="wishlistCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <button class="btn-icon" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <div id="userMenu">
+                <div class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== BLOG CONTENT ===== -->
+    <div class="container">
+        <div class="blog-header">
+            <h1>📝 Style Journal</h1>
+            <p>Fashion tips, style guides, and inspiration from the StyleSphere community</p>
+            
+            <div class="blog-search">
+                <input type="text" id="blogSearch" placeholder="Search articles...">
+                <button class="btn btn-primary" onclick="searchPosts()"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="blog-categories" id="categoryFilter">
+                <button class="cat-btn active" data-cat="all" onclick="filterCategory('all')">📚 All</button>
+                <button class="cat-btn" data-cat="style" onclick="filterCategory('style')">👗 Style</button>
+                <button class="cat-btn" data-cat="trends" onclick="filterCategory('trends')">🔥 Trends</button>
+                <button class="cat-btn" data-cat="guides" onclick="filterCategory('guides')">📖 Guides</button>
+                <button class="cat-btn" data-cat="sustainable" onclick="filterCategory('sustainable')">🌱 Sustainable</button>
+                <button class="cat-btn" data-cat="news" onclick="filterCategory('news')">📰 News</button>
+            </div>
+        </div>
+        
+        <div class="blog-grid" id="blogGrid">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading articles...</div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- ===== SUBMIT BLOG BUTTON ===== -->
+    <div class="submit-blog-btn">
+        <button class="btn btn-primary btn-pill" onclick="window.location.href='blog-submit.html'">
+            <i class="fas fa-pen-fancy"></i> Write a Blog
+        </button>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: var(--muted); font-size: 14px;">Premium fashion marketplace curated for style enthusiasts.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: var(--muted); font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: var(--muted); font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let allPosts = [];
+        let currentCategory = 'all';
+        let currentPage = 1;
+        const postsPerPage = 6;
+
+        function loadBlogData() {
+            fetch('api/get-blogs.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        allPosts = data.blogs.filter(post => post.status === 'published');
+                        renderPosts();
+                    } else {
+                        console.error('API error:', data.error);
+                        allPosts = [];
+                        renderPosts();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading blogs:', error);
+                    allPosts = [];
+                    renderPosts();
+                });
+        }
+
+        function renderPosts() {
+            const searchTerm = document.getElementById('blogSearch')?.value.toLowerCase() || '';
+            
+            let filtered = allPosts.filter(p => {
+                if (currentCategory !== 'all' && p.category !== currentCategory) return false;
+                if (searchTerm && !p.title.toLowerCase().includes(searchTerm) && 
+                    !(p.excerpt && p.excerpt.toLowerCase().includes(searchTerm))) return false;
+                return true;
+            });
+
+            const totalPages = Math.ceil(filtered.length / postsPerPage);
+            const start = (currentPage - 1) * postsPerPage;
+            const paginated = filtered.slice(start, start + postsPerPage);
+
+            const grid = document.getElementById('blogGrid');
+            
+            if (paginated.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: var(--spacing-xxl); color: var(--muted);">
+                        <i class="fas fa-newspaper" style="font-size: 48px; color: var(--hairline); margin-bottom: var(--spacing-md); display: block;"></i>
+                        <h3>No articles found</h3>
+                        <p>Check back later for new content!</p>
+                    </div>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = paginated.map(post => `
+                <div class="blog-card" onclick="viewPost(${post.id})">
+                    <img class="card-image" src="${post.image || 'https://placehold.co/600x400/e8ddd3/8B5E3C?text=StyleSphere'}" 
+                         onerror="this.src='https://placehold.co/600x400/e8ddd3/8B5E3C?text=StyleSphere'">
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> ${formatDate(post.created_at)}</span>
+                            <span><i class="far fa-clock"></i> ${post.read_time || 5} min</span>
+                            <span><i class="far fa-eye"></i> ${post.views || 0}</span>
+                        </div>
+                        <div class="card-title">${escapeHtml(post.title)}</div>
+                        <div class="card-excerpt">${(post.excerpt || post.content?.substring(0, 120) || '').substring(0, 120)}...</div>
+                        <div class="read-more">Read More <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Pagination
+            const pagination = document.getElementById('pagination');
+            if (totalPages > 1) {
+                let html = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                pagination.innerHTML = html;
+            } else {
+                pagination.innerHTML = '';
+            }
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            currentPage = 1;
+            
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.cat === category);
+            });
+            
+            renderPosts();
+        }
+
+        function searchPosts() {
+            currentPage = 1;
+            renderPosts();
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderPosts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function viewPost(postId) {
+            localStorage.setItem('viewPostId', postId);
+            window.location.href = 'blog-post.html';
+        }
+
+        window.filterCategory = filterCategory;
+        window.searchPosts = searchPosts;
+        window.goToPage = goToPage;
+        window.viewPost = viewPost;
+
+        document.addEventListener('DOMContentLoaded', loadBlogData);
+    </script>
+</body>
+</html>

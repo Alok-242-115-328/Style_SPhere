@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .admin-header h1 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .settings-grid {
+            display: grid;
+            gap: var(--spacing-xl);
+        }
+        
+        .settings-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+        }
+        
+        .settings-card h2 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--hairline-soft);
+        }
+        
+        .settings-card .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .settings-card .form-group label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .settings-card .form-group input,
+        .settings-card .form-group textarea,
+        .settings-card .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family);
+            font-size: 14px;
+        }
+        
+        .settings-card .form-group input:focus,
+        .settings-card .form-group textarea:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .settings-card .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .settings-card .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-base);
+        }
+        
+        .settings-card .btn {
+            margin-top: var(--spacing-sm);
+        }
+        
+        .danger-zone {
+            border: 2px solid var(--danger);
+            background: #fff5f5;
+        }
+        
+        .danger-zone h2 {
+            color: var(--danger);
+            border-bottom-color: var(--danger);
+        }
+        
+        .danger-zone .warning-text {
+            color: var(--danger);
+            font-size: 14px;
+        }
+        
+        .danger-zone .danger-actions {
+            display: flex;
+            gap: var(--spacing-base);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-md);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal-card {
+            background: var(--canvas);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-card h3 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            color: var(--danger);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card p {
+            color: var(--muted);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card .confirm-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-family: monospace;
+            font-size: 16px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card .confirm-input:focus {
+            outline: none;
+            border-color: var(--danger);
+        }
+        
+        .modal-card .form-actions {
+            display: flex;
+            gap: var(--spacing-base);
+        }
+        
+        .modal-card .form-actions .btn {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-card .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab" onclick="window.location.href='admin-dashboard.html'">
+                <span class="tab-icon">📊</span>
+                Dashboard
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-products.html'">
+                <span class="tab-icon">📦</span>
+                Products
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-orders.html'">
+                <span class="tab-icon">📋</span>
+                Orders
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-users.html'">
+                <span class="tab-icon">👥</span>
+                Users
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon active">
+                <i class="fas fa-cog"></i>
+            </button>
+            <div class="user-avatar" onclick="if(confirm('Logout?')){localStorage.removeItem('currentUser');window.location.href='index.html';}">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== SETTINGS CONTENT ===== -->
+    <div class="container">
+        <div class="admin-header">
+            <h1>⚙️ Settings</h1>
+        </div>
+        
+        <div class="settings-grid" id="settingsContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading settings...</div>
+        </div>
+    </div>
+
+    <!-- ===== RESET MODAL ===== -->
+    <div id="resetModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3>⚠️ DANGER ZONE</h3>
+            <p>This will permanently delete ALL data from your database. This action cannot be undone!</p>
+            <p style="font-size:14px; color: var(--muted);">
+                Preserved: Admin user, 8 products, 2 blogs, 3 carousel slides, 6 features
+            </p>
+            <p style="font-size:14px; font-weight:var(--font-weight-bold);">
+                Type <span style="color:var(--danger);">DELETE ALL DATA</span> to confirm:
+            </p>
+            <input type="text" id="resetConfirmInput" class="confirm-input" placeholder="DELETE ALL DATA">
+            <div class="form-actions">
+                <button class="btn btn-danger" onclick="confirmReset()">Yes, Delete Everything</button>
+                <button class="btn btn-secondary" onclick="closeResetModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        function checkAdminAccess() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return false; }
+            if (user.role !== 'admin') { window.location.href = 'index.html'; return false; }
+            return true;
+        }
+
+        function renderSettings() {
+            const container = document.getElementById('settingsContainer');
+            const store = JSON.parse(localStorage.getItem('store_settings')) || {};
+
+            container.innerHTML = `
+                <div class="settings-card">
+                    <h2>🏪 Store Settings</h2>
+                    <div class="form-group">
+                        <label>Store Name</label>
+                        <input type="text" id="storeName" value="${escapeHtml(store.storeName || 'StyleSphere')}">
+                    </div>
+                    <div class="form-group">
+                        <label>Store Email</label>
+                        <input type="email" id="storeEmail" value="${escapeHtml(store.storeEmail || 'info@stylesphere.com')}">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="storePhone" value="${escapeHtml(store.storePhone || '+880 1234 567890')}">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="storeAddress" rows="2">${escapeHtml(store.storeAddress || 'House #42, Road #12, Banani, Dhaka-1213, Bangladesh')}</textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveStoreSettings()">Save Settings</button>
+                </div>
+                
+                <div class="settings-card danger-zone">
+                    <h2>💀 Danger Zone</h2>
+                    <p class="warning-text">⚠️ These actions are irreversible and will permanently delete data.</p>
+                    
+                    <div style="margin: var(--spacing-lg) 0; padding: var(--spacing-md); background: #fff5f5; border-radius: var(--radius-sm);">
+                        <h3 style="color: var(--danger); font-size:18px; margin-bottom:var(--spacing-sm);">🗑️ Reset Database</h3>
+                        <p style="color: var(--muted); font-size:14px;">Delete ALL data and restore to initial state. You will be logged out.</p>
+                        <div class="danger-actions">
+                            <button class="btn btn-danger" onclick="showResetModal()">
+                                <i class="fas fa-database"></i> Reset Database
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearLocalStorage()">
+                                <i class="fas fa-trash-alt"></i> Clear Local Storage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveStoreSettings() {
+            const settings = {
+                storeName: document.getElementById('storeName').value,
+                storeEmail: document.getElementById('storeEmail').value,
+                storePhone: document.getElementById('storePhone').value,
+                storeAddress: document.getElementById('storeAddress').value
+            };
+            localStorage.setItem('store_settings', JSON.stringify(settings));
+            showToast('Settings saved!');
+        }
+
+        function showResetModal() {
+            document.getElementById('resetModal').classList.add('open');
+            document.getElementById('resetConfirmInput').value = '';
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('open');
+        }
+
+        async function confirmReset() {
+            const confirmation = document.getElementById('resetConfirmInput').value;
+            if (confirmation !== 'DELETE ALL DATA') {
+                showToast('Please type "DELETE ALL DATA" to confirm');
+                return;
+            }
+
+            closeResetModal();
+            
+            try {
+                const response = await fetch('api/reset-database.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset_all', confirm: 'DELETE ALL DATA' })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.removeItem('currentUser');
+                    sessionStorage.clear();
+                    showToast('✅ Database reset successfully! Redirecting to login...');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Reset error:', error);
+                showToast('Failed to reset database');
+            }
+        }
+
+        function clearLocalStorage() {
+            if (confirm('Clear all localStorage data (cart, wishlist, etc.)? This does NOT affect the database.')) {
+                const itemsToKeep = ['currentUser', 'store_settings', 'payment_settings', 'email_settings'];
+                const allKeys = Object.keys(localStorage);
+                for (const key of allKeys) {
+                    if (!itemsToKeep.includes(key)) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                showToast('Local storage cleared!');
+                setTimeout(() => location.reload(), 1000);
+            }
+        }
+
+        window.saveStoreSettings = saveStoreSettings;
+        window.showResetModal = showResetModal;
+        window.closeResetModal = closeResetModal;
+        window.confirmReset = confirmReset;
+        window.clearLocalStorage = clearLocalStorage;
+
+        if (checkAdminAccess()) {
+            renderSettings();
+        }
+    </script>
+</body>
+</html>

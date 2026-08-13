@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .admin-container {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .admin-welcome {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-active) 100%);
+            color: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .admin-welcome h1 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .admin-welcome p {
+            opacity: 0.9;
+            margin-top: var(--spacing-xs);
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .admin-stat {
+            background: var(--canvas);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .admin-stat .stat-icon {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .admin-stat .stat-number {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .admin-stat .stat-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .admin-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+        }
+        
+        .admin-card h3 {
+            font-size: 18px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--hairline-soft);
+        }
+        
+        .admin-card .chart-container {
+            height: 250px;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+        }
+        
+        .quick-actions .btn {
+            padding: 0.7rem;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .recent-orders {
+            margin-top: var(--spacing-md);
+        }
+        
+        .recent-order {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--hairline-soft);
+            font-size: 14px;
+        }
+        
+        .recent-order:last-child {
+            border-bottom: none;
+        }
+        
+        .recent-order .order-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .order-status.processing { background: var(--warning); color: #333; }
+        .order-status.shipped { background: var(--info); color: white; }
+        .order-status.delivered { background: var(--success); color: white; }
+        .order-status.cancelled { background: var(--danger); color: white; }
+        
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab active">
+                <span class="tab-icon">📊</span>
+                Dashboard
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-products.html'">
+                <span class="tab-icon">📦</span>
+                Products
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-orders.html'">
+                <span class="tab-icon">📋</span>
+                Orders
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-users.html'">
+                <span class="tab-icon">👥</span>
+                Users
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='admin-settings.html'">
+                <i class="fas fa-cog"></i>
+            </button>
+            <div class="user-avatar" onclick="if(confirm('Logout?')){localStorage.removeItem('currentUser');window.location.href='index.html';}">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== ADMIN DASHBOARD ===== -->
+    <div class="container">
+        <div class="admin-container" id="adminContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading dashboard...</div>
+        </div>
+    </div>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let salesChart = null;
+
+        function checkAdminAccess() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return false; }
+            if (user.role !== 'admin') { window.location.href = 'index.html'; return false; }
+            return true;
+        }
+
+        async function loadDashboard() {
+            if (!checkAdminAccess()) return;
+
+            try {
+                const [ordersRes, productsRes, usersRes] = await Promise.all([
+                    fetch('api/get-orders.php'),
+                    fetch('api/get-products.php'),
+                    fetch('api/get-users.php')
+                ]);
+
+                const orders = (await ordersRes.json()).orders || [];
+                const products = (await productsRes.json()).products || [];
+                const users = (await usersRes.json()).users || [];
+
+                renderDashboard(orders, products, users);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('adminContainer').innerHTML = `
+                    <div style="text-align:center; padding:var(--spacing-xxl); color: var(--muted);">
+                        <i class="fas fa-exclamation-triangle" style="font-size:48px; color: var(--danger);"></i>
+                        <h3 style="margin-top:var(--spacing-md);">Error Loading Dashboard</h3>
+                        <p>Please refresh the page or check your connection.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDashboard(orders, products, users) {
+            const container = document.getElementById('adminContainer');
+            
+            const totalOrders = orders.length;
+            const totalProducts = products.length;
+            const totalUsers = users.length;
+            const paidOrders = orders.filter(o => o.payment_confirmed == 1);
+            const totalRevenue = paidOrders.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+            const pendingOrders = orders.filter(o => o.status === 'Processing' || o.status === 'Pending').length;
+
+            // Monthly sales data
+            const monthlySales = {};
+            paidOrders.forEach(order => {
+                const date = new Date(order.created_at);
+                const month = date.toLocaleString('default', { month: 'short' });
+                monthlySales[month] = (monthlySales[month] || 0) + (parseFloat(order.total) || 0);
+            });
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const chartLabels = months.slice(0, 6);
+            const chartData = chartLabels.map(m => monthlySales[m] || 0);
+
+            const recentOrders = orders.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+
+            container.innerHTML = `
+                <div class="admin-welcome">
+                    <h1>👋 Admin Dashboard</h1>
+                    <p>Welcome back! Here's your store overview.</p>
+                </div>
+                
+                <div class="admin-stats">
+                    <div class="admin-stat">
+                        <div class="stat-icon"><i class="fas fa-box"></i></div>
+                        <div class="stat-number">${totalProducts}</div>
+                        <div class="stat-label">Products</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-number">${totalOrders}</div>
+                        <div class="stat-label">Orders</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-number">${totalUsers}</div>
+                        <div class="stat-label">Users</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="stat-icon"><i class="fas fa-taka-sign"></i></div>
+                        <div class="stat-number">৳${totalRevenue.toLocaleString()}</div>
+                        <div class="stat-label">Revenue</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-number">${pendingOrders}</div>
+                        <div class="stat-label">Pending Orders</div>
+                    </div>
+                </div>
+                
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3>📊 Sales Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <h3>⚡ Quick Actions</h3>
+                        <div class="quick-actions">
+                            <a href="admin-products.html" class="btn btn-primary btn-pill" style="font-size:12px;"><i class="fas fa-plus"></i> Add Product</a>
+                            <a href="admin-orders.html" class="btn btn-secondary btn-pill" style="font-size:12px;"><i class="fas fa-eye"></i> View Orders</a>
+                            <a href="admin-users.html" class="btn btn-secondary btn-pill" style="font-size:12px;"><i class="fas fa-users"></i> Manage Users</a>
+                            <a href="admin-coupons.html" class="btn btn-secondary btn-pill" style="font-size:12px;"><i class="fas fa-tag"></i> Coupons</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <h3>📋 Recent Orders</h3>
+                    <div class="recent-orders">
+                        ${recentOrders.length === 0 ? '<p style="color: var(--muted);">No orders yet.</p>' : 
+                            recentOrders.map(order => `
+                                <div class="recent-order">
+                                    <div>
+                                        <strong>#${escapeHtml(order.order_number || order.id)}</strong>
+                                        <span style="color: var(--muted); font-size: 12px; margin-left: var(--spacing-sm);">
+                                            ${formatDate(order.created_at)}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="font-weight: var(--font-weight-medium);">৳${parseFloat(order.total || 0).toLocaleString()}</span>
+                                        <span class="order-status ${(order.status || 'processing').toLowerCase()}">${order.status || 'Processing'}</span>
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+            `;
+
+            // Initialize chart
+            const ctx = document.getElementById('salesChart');
+            if (ctx) {
+                if (salesChart) salesChart.destroy();
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: chartData,
+                            borderColor: '#ff385c',
+                            backgroundColor: 'rgba(255,56,92,0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

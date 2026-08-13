@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .checkout-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+        }
+        
+        .checkout-card h2 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--hairline-soft);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family);
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-base);
+        }
+        
+        .payment-methods {
+            margin: var(--spacing-md) 0;
+        }
+        
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border: 2px solid var(--hairline-soft);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .payment-method:hover {
+            border-color: var(--muted);
+        }
+        
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .payment-method input[type="radio"] {
+            margin-right: var(--spacing-md);
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        .payment-method .method-icon {
+            font-size: 24px;
+            margin-right: var(--spacing-md);
+            color: var(--muted);
+        }
+        
+        .payment-method .method-info .method-name {
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .payment-method .method-info .method-desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .payment-note {
+            background: var(--surface-soft);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin: var(--spacing-md) 0;
+            font-size: 14px;
+            color: var(--muted);
+            display: none;
+        }
+        
+        .payment-note.show {
+            display: block;
+        }
+        
+        .bank-details {
+            background: var(--surface-soft);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin-top: var(--spacing-md);
+            display: none;
+        }
+        
+        .bank-details.show {
+            display: block;
+        }
+        
+        .bank-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-xs) 0;
+            font-size: 14px;
+            border-bottom: 1px dashed var(--hairline-soft);
+        }
+        
+        .bank-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .bank-detail .copy-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .order-summary {
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--hairline-soft);
+            font-size: 14px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            font-size: 15px;
+        }
+        
+        .summary-row.total {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            border-top: 2px solid var(--hairline);
+            padding-top: var(--spacing-md);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .summary-row.discount {
+            color: var(--success);
+        }
+        
+        .discount-info {
+            background: var(--surface-soft);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-md);
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .place-order-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 18px;
+            font-weight: var(--font-weight-bold);
+            margin-top: var(--spacing-md);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-overlay i {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal-card {
+            background: var(--canvas);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-card h3 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .modal-card p {
+            color: var(--muted);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card input:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .modal-card .btn {
+            width: 100%;
+        }
+        
+        .modal-card .btn-secondary {
+            margin-top: var(--spacing-sm);
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab active">
+                <span class="tab-icon">👗</span>
+                Fashion
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">🎨</span>
+                Collections
+                <span class="new-tag">NEW</span>
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">✨</span>
+                Styling
+                <span class="new-tag">NEW</span>
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='wishlist.html'">
+                <i class="far fa-heart"></i>
+                <span id="wishlistCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <button class="btn-icon" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <div id="userMenu">
+                <div class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== CHECKOUT CONTENT ===== -->
+    <div class="container">
+        <div class="checkout-layout" id="checkoutContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading checkout...</div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Placing your order...</p>
+    </div>
+
+    <!-- ===== TRANSACTION MODAL ===== -->
+    <div id="transactionModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3>💳 Complete Payment</h3>
+            <p id="transactionInstructions">Send payment and enter the transaction ID below.</p>
+            <input type="text" id="transactionId" placeholder="e.g., BKASH123456789">
+            <button class="btn btn-primary" onclick="confirmTransaction()">Confirm Payment</button>
+            <button class="btn btn-secondary" onclick="closeTransactionModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: var(--muted); font-size: 14px;">Premium fashion marketplace curated for style enthusiasts.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: var(--muted); font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: var(--muted); font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let cart = [];
+        let products = [];
+        let selectedPayment = null;
+        let currentUser = null;
+        let userTier = 'Bronze';
+        let tierDiscountPercent = 0;
+        let subtotal = 0;
+        let tierDiscount = 0;
+        let couponDiscount = 0;
+        let deliveryCharge = 60;
+        let total = 0;
+        const freeShippingThreshold = 10000;
+
+        const bankDetails = {
+            bkash: { number: "017XXXXXXXX" },
+            nagad: { number: "018XXXXXXXX" },
+            rocket: { number: "019XXXXXXXX" },
+            bank: { accountName: "StyleSphere", accountNumber: "20510123456789", bankName: "Islami Bank Bangladesh Ltd" }
+        };
+
+        async function loadCheckout() {
+            currentUser = getCurrentUser();
+            if (!currentUser) {
+                showToast('Please login to checkout');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+
+            cart = JSON.parse(localStorage.getItem('attar_cart')) || [];
+            if (cart.length === 0) {
+                showToast('Your cart is empty!');
+                setTimeout(() => window.location.href = 'shop.html', 1500);
+                return;
+            }
+
+            try {
+                const response = await fetch('api/get-products.php');
+                const data = await response.json();
+                if (data.success) {
+                    products = data.products;
+                }
+
+                // Load user tier
+                const tierResponse = await fetch(`api/get-user-tier.php?email=${encodeURIComponent(currentUser.email)}`);
+                const tierData = await tierResponse.json();
+                if (tierData.success) {
+                    userTier = tierData.tier;
+                    tierDiscountPercent = tierData.discount;
+                }
+
+                // Load saved coupon
+                const savedCoupon = sessionStorage.getItem('appliedCoupon');
+                if (savedCoupon) {
+                    const coupon = JSON.parse(savedCoupon);
+                    couponDiscount = coupon.discount;
+                    sessionStorage.removeItem('appliedCoupon');
+                }
+
+                renderCheckout();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error loading checkout');
+            }
+        }
+
+        function renderCheckout() {
+            const container = document.getElementById('checkoutContainer');
+            
+            // Calculate totals
+            subtotal = cart.reduce((sum, item) => {
+                const p = products.find(pr => pr.id === item.id);
+                return sum + (p ? p.price * item.quantity : 0);
+            }, 0);
+
+            tierDiscount = (subtotal * tierDiscountPercent) / 100;
+            const afterTier = subtotal - tierDiscount;
+            const finalTotal = afterTier - couponDiscount;
+            deliveryCharge = finalTotal >= freeShippingThreshold ? 0 : 60;
+            total = finalTotal + deliveryCharge;
+
+            const tierData = {
+                'Bronze': { icon: '🥉', class: 'bronze' },
+                'Silver': { icon: '🥈', class: 'silver' },
+                'Gold': { icon: '🥇', class: 'gold' },
+                'Platinum': { icon: '💎', class: 'platinum' }
+            };
+
+            container.innerHTML = `
+                <div class="checkout-card">
+                    <h2><i class="fas fa-credit-card"></i> Payment Details</h2>
+                    
+                    <div class="discount-info">
+                        <span class="tier-badge ${tierData[userTier]?.class || 'bronze'}">
+                            ${tierData[userTier]?.icon || '🥉'} ${userTier}
+                        </span>
+                        ${tierDiscountPercent > 0 ? `You get ${tierDiscountPercent}% discount!` : ''}
+                        ${couponDiscount > 0 ? ` • Coupon discount: ৳${couponDiscount}` : ''}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="fullName" value="${escapeHtml(currentUser.name || '')}" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="email" value="${escapeHtml(currentUser.email || '')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="tel" id="phone" value="${escapeHtml(currentUser.phone || '')}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Address *</label>
+                        <textarea id="address" rows="3" required>${escapeHtml(currentUser.address || '')}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="city" value="${escapeHtml(currentUser.city || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label>Postal Code</label>
+                            <input type="text" id="postalCode" value="${escapeHtml(currentUser.postal_code || '')}">
+                        </div>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <label style="font-weight: var(--font-weight-bold); display: block; margin-bottom: var(--spacing-sm);">Payment Method *</label>
+                        
+                        <div class="payment-method" onclick="selectPayment('bkash')">
+                            <input type="radio" name="payment" value="bkash">
+                            <span class="method-icon"><i class="fab fa-amazon-pay"></i></span>
+                            <div class="method-info">
+                                <div class="method-name">bKash</div>
+                                <div class="method-desc">Pay with bKash mobile wallet</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPayment('nagad')">
+                            <input type="radio" name="payment" value="nagad">
+                            <span class="method-icon"><i class="fas fa-mobile-alt"></i></span>
+                            <div class="method-info">
+                                <div class="method-name">Nagad</div>
+                                <div class="method-desc">Pay with Nagad mobile wallet</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPayment('rocket')">
+                            <input type="radio" name="payment" value="rocket">
+                            <span class="method-icon"><i class="fas fa-rocket"></i></span>
+                            <div class="method-info">
+                                <div class="method-name">Rocket</div>
+                                <div class="method-desc">Pay with Rocket mobile banking</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPayment('bank')">
+                            <input type="radio" name="payment" value="bank">
+                            <span class="method-icon"><i class="fas fa-university"></i></span>
+                            <div class="method-info">
+                                <div class="method-name">Bank Transfer</div>
+                                <div class="method-desc">Direct bank deposit</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPayment('cod')">
+                            <input type="radio" name="payment" value="cod">
+                            <span class="method-icon"><i class="fas fa-money-bill-wave"></i></span>
+                            <div class="method-info">
+                                <div class="method-name">Cash on Delivery</div>
+                                <div class="method-desc">Pay when you receive</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="paymentNote" class="payment-note">
+                        <i class="fas fa-info-circle"></i> <span id="paymentNoteText"></span>
+                    </div>
+                    
+                    <div id="bankDetails" class="bank-details">
+                        <h4 style="margin-bottom: var(--spacing-sm);">Payment Instructions</h4>
+                        <div id="bankDetailsContent"></div>
+                    </div>
+                    
+                    <button class="btn btn-primary place-order-btn" onclick="placeOrder()">
+                        <i class="fas fa-check-circle"></i> Place Order
+                    </button>
+                </div>
+                
+                <div class="checkout-card">
+                    <h2><i class="fas fa-shopping-bag"></i> Order Summary</h2>
+                    
+                    <div class="order-summary">
+                        ${cart.map(item => {
+                            const p = products.find(pr => pr.id === item.id);
+                            if (!p) return '';
+                            return `
+                                <div class="order-item">
+                                    <span>${escapeHtml(p.name)} x ${item.quantity}</span>
+                                    <span>৳${(p.price * item.quantity).toLocaleString()}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>৳${subtotal.toLocaleString()}</span>
+                    </div>
+                    ${tierDiscount > 0 ? `
+                        <div class="summary-row discount">
+                            <span>Tier Discount (${tierDiscountPercent}%)</span>
+                            <span>-৳${tierDiscount.toLocaleString()}</span>
+                        </div>
+                    ` : ''}
+                    ${couponDiscount > 0 ? `
+                        <div class="summary-row discount">
+                            <span>Coupon Discount</span>
+                            <span>-৳${couponDiscount.toLocaleString()}</span>
+                        </div>
+                    ` : ''}
+                    <div class="summary-row">
+                        <span>Delivery</span>
+                        <span>${deliveryCharge === 0 ? 'Free' : '৳' + deliveryCharge}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>৳${total.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            
+            // Update UI
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('input[name="payment"]').forEach(el => el.checked = false);
+            
+            const methodEl = document.querySelector(`.payment-method input[value="${method}"]`);
+            if (methodEl) {
+                methodEl.checked = true;
+                methodEl.closest('.payment-method').classList.add('selected');
+            }
+            
+            const note = document.getElementById('paymentNote');
+            const noteText = document.getElementById('paymentNoteText');
+            const bankDetailsEl = document.getElementById('bankDetails');
+            const bankContent = document.getElementById('bankDetailsContent');
+            
+            if (method === 'cod') {
+                noteText.innerHTML = 'Cash on Delivery selected. You will pay when the product is delivered.';
+                note.classList.add('show');
+                bankDetailsEl.classList.remove('show');
+            } else {
+                noteText.innerHTML = 'Online payment selected. Please complete the payment.';
+                note.classList.add('show');
+                
+                if (['bkash', 'nagad', 'rocket'].includes(method)) {
+                    const details = bankDetails[method];
+                    bankContent.innerHTML = `
+                        <div class="bank-detail">
+                            <span>${method.toUpperCase()} Number</span>
+                            <span>${details.number} <button class="copy-btn" onclick="copyText('${details.number}')"><i class="fas fa-copy"></i></button></span>
+                        </div>
+                    `;
+                    bankDetailsEl.classList.add('show');
+                } else if (method === 'bank') {
+                    const details = bankDetails.bank;
+                    bankContent.innerHTML = `
+                        <div class="bank-detail"><span>Account Name</span><span>${details.accountName}</span></div>
+                        <div class="bank-detail"><span>Account Number</span><span>${details.accountNumber} <button class="copy-btn" onclick="copyText('${details.accountNumber}')"><i class="fas fa-copy"></i></button></span></div>
+                        <div class="bank-detail"><span>Bank Name</span><span>${details.bankName}</span></div>
+                    `;
+                    bankDetailsEl.classList.add('show');
+                } else {
+                    bankDetailsEl.classList.remove('show');
+                }
+            }
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            showToast('Copied!');
+        }
+
+        function validateForm() {
+            const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+
+            if (!name) { showToast('Enter your full name'); return false; }
+            if (!email || !email.includes('@')) { showToast('Enter valid email'); return false; }
+            if (!phone || phone.length < 10) { showToast('Enter valid phone'); return false; }
+            if (!address) { showToast('Enter delivery address'); return false; }
+            if (!selectedPayment) { showToast('Select payment method'); return false; }
+            return true;
+        }
+
+        function placeOrder() {
+            if (!validateForm()) return;
+            
+            if (selectedPayment !== 'cod') {
+                let instruction = '';
+                if (selectedPayment === 'bkash') instruction = `Send ৳${total.toLocaleString()} to ${bankDetails.bkash.number}`;
+                else if (selectedPayment === 'nagad') instruction = `Send ৳${total.toLocaleString()} to ${bankDetails.nagad.number}`;
+                else if (selectedPayment === 'rocket') instruction = `Send ৳${total.toLocaleString()} to ${bankDetails.rocket.number}`;
+                else if (selectedPayment === 'bank') instruction = `Transfer ৳${total.toLocaleString()} to A/C: ${bankDetails.bank.accountNumber}`;
+                
+                document.getElementById('transactionInstructions').innerHTML = instruction;
+                document.getElementById('transactionModal').classList.add('open');
+                return;
+            }
+            
+            processOrder(null);
+        }
+
+        function confirmTransaction() {
+            const tid = document.getElementById('transactionId').value.trim();
+            if (!tid) { showToast('Enter transaction ID'); return; }
+            closeTransactionModal();
+            processOrder(tid);
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').classList.remove('open');
+            document.getElementById('transactionId').value = '';
+        }
+
+        async function processOrder(transactionId) {
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            const orderItems = cart.map(item => {
+                const p = products.find(pr => pr.id === item.id);
+                return { id: p.id, name: p.name, brand: p.brand, price: p.price, quantity: item.quantity };
+            });
+
+            try {
+                const response = await fetch('api/create-order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        customer_name: document.getElementById('fullName').value.trim(),
+                        customer_email: document.getElementById('email').value.trim(),
+                        customer_phone: document.getElementById('phone').value.trim(),
+                        customer_address: document.getElementById('address').value.trim(),
+                        city: document.getElementById('city').value.trim(),
+                        postal_code: document.getElementById('postalCode').value.trim(),
+                        items: orderItems,
+                        subtotal: subtotal,
+                        discount: tierDiscount + couponDiscount,
+                        delivery_charge: deliveryCharge,
+                        total: total,
+                        payment_method: selectedPayment,
+                        transaction_id: transactionId
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('loadingOverlay').classList.remove('active');
+
+                if (result.success) {
+                    localStorage.removeItem('attar_cart');
+                    updateNavCartCount();
+                    showToast(`✅ Order placed! Tracking: ${result.tracking_number}`);
+                    setTimeout(() => {
+                        window.location.href = `order-tracking.html?order=${result.order_number}`;
+                    }, 2000);
+                } else {
+                    showToast('Order failed: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loadingOverlay').classList.remove('active');
+                console.error('Order error:', error);
+                showToast('Failed to place order. Please try again.');
+            }
+        }
+
+        window.selectPayment = selectPayment;
+        window.placeOrder = placeOrder;
+        window.confirmTransaction = confirmTransaction;
+        window.closeTransactionModal = closeTransactionModal;
+        window.copyText = copyText;
+
+        document.addEventListener('DOMContentLoaded', loadCheckout);
+    </script>
+</body>
+</html>

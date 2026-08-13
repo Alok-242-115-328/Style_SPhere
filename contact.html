@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .contact-info {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+        }
+        
+        .contact-info h2 {
+            font-size: 24px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .contact-info > p {
+            color: var(--muted);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .contact-item {
+            display: flex;
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-lg);
+            align-items: flex-start;
+        }
+        
+        .contact-item .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .contact-item .info h4 {
+            font-weight: var(--font-weight-semibold);
+            font-size: 16px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .contact-item .info p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: var(--spacing-base);
+            margin-top: var(--spacing-xl);
+        }
+        
+        .social-links a {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            background: var(--surface-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .contact-form {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+        }
+        
+        .contact-form h2 {
+            font-size: 24px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .contact-form .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .contact-form .form-group label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .contact-form .form-group input,
+        .contact-form .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family);
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .contact-form .form-group input:focus,
+        .contact-form .form-group textarea:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .contact-form .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .contact-form .btn {
+            width: 100%;
+            padding: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab active">
+                <span class="tab-icon">👗</span>
+                Fashion
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">🎨</span>
+                Collections
+                <span class="new-tag">NEW</span>
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">✨</span>
+                Styling
+                <span class="new-tag">NEW</span>
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='wishlist.html'">
+                <i class="far fa-heart"></i>
+                <span id="wishlistCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <button class="btn-icon" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <div id="userMenu">
+                <div class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== CONTACT CONTENT ===== -->
+    <div class="container">
+        <div style="text-align: center; padding: var(--spacing-xl) 0 var(--spacing-sm);">
+            <h1 style="font-size: 32px; font-weight: var(--font-weight-bold);">Get in Touch</h1>
+            <p style="color: var(--muted); font-size: 16px;">We'd love to hear from you! Reach out anytime.</p>
+        </div>
+        
+        <div class="contact-layout">
+            <div class="contact-info">
+                <h2>Contact Information</h2>
+                <p>Have a question about an order, a product, or just want to say hello? We're here to help!</p>
+                
+                <div class="contact-item">
+                    <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="info">
+                        <h4>Address</h4>
+                        <p>House #42, Road #12, Banani<br>Dhaka-1213, Bangladesh</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="icon"><i class="fas fa-phone"></i></div>
+                    <div class="info">
+                        <h4>Phone</h4>
+                        <p>+880 1234 567890</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="icon"><i class="fas fa-envelope"></i></div>
+                    <div class="info">
+                        <h4>Email</h4>
+                        <p>info@stylesphere.com</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="info">
+                        <h4>Business Hours</h4>
+                        <p>Saturday - Thursday: 10AM - 8PM<br>Friday: Closed</p>
+                    </div>
+                </div>
+                
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <h2>Send Us a Message</h2>
+                <form onsubmit="event.preventDefault(); sendMessage();">
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        <input type="text" id="contactName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="contactEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="contactSubject" placeholder="What's this about?">
+                    </div>
+                    <div class="form-group">
+                        <label>Message *</label>
+                        <textarea id="contactMessage" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: var(--muted); font-size: 14px;">Premium fashion marketplace curated for style enthusiasts.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: var(--muted); font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: var(--muted); font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        function sendMessage() {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const subject = document.getElementById('contactSubject').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+
+            if (!name || !email || !message) {
+                showToast('Please fill all required fields');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                showToast('Please enter a valid email');
+                return;
+            }
+
+            let messages = JSON.parse(localStorage.getItem('contact_messages')) || [];
+            messages.push({
+                id: Date.now(),
+                name,
+                email,
+                subject: subject || 'No subject',
+                message,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('contact_messages', JSON.stringify(messages));
+
+            showToast(`Thank you ${name}! We'll respond within 24 hours.`);
+
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactSubject').value = '';
+            document.getElementById('contactMessage').value = '';
+        }
+
+        window.sendMessage = sendMessage;
+    </script>
+</body>
+</html>

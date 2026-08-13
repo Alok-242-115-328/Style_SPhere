@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .about-hero {
+            text-align: center;
+            padding: var(--spacing-section) 0 var(--spacing-xl);
+        }
+        
+        .about-hero h1 {
+            font-size: 42px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .about-hero p {
+            color: var(--muted);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .about-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+        }
+        
+        .about-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .about-card .icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .about-card h3 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .about-card p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .about-story {
+            background: var(--surface-soft);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .about-story h2 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .about-story p {
+            color: var(--body);
+            line-height: 1.8;
+            max-width: 800px;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-lg);
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+        }
+        
+        .stat-item .number {
+            font-size: 36px;
+            font-weight: var(--font-weight-bold);
+            color: var(--primary);
+        }
+        
+        .stat-item .label {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: var(--spacing-xs);
+        }
+        
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 30px;
+            }
+            
+            .about-hero p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab active">
+                <span class="tab-icon">👗</span>
+                Fashion
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">🎨</span>
+                Collections
+                <span class="new-tag">NEW</span>
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">✨</span>
+                Styling
+                <span class="new-tag">NEW</span>
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='wishlist.html'">
+                <i class="far fa-heart"></i>
+                <span id="wishlistCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <button class="btn-icon" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <div id="userMenu">
+                <div class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== ABOUT CONTENT ===== -->
+    <div class="container">
+        <div class="about-hero">
+            <h1>About StyleSphere</h1>
+            <p>Curating the finest fashion pieces for style enthusiasts worldwide</p>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="number">50K+</div>
+                <div class="label">Happy Customers</div>
+            </div>
+            <div class="stat-item">
+                <div class="number">500+</div>
+                <div class="label">Premium Brands</div>
+            </div>
+            <div class="stat-item">
+                <div class="number">30+</div>
+                <div class="label">Countries</div>
+            </div>
+            <div class="stat-item">
+                <div class="number">4.9★</div>
+                <div class="label">Average Rating</div>
+            </div>
+        </div>
+        
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-gem"></i></div>
+                <h3>Premium Quality</h3>
+                <p>Every piece in our collection is carefully curated for exceptional quality and craftsmanship.</p>
+            </div>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-hand-sparkles"></i></div>
+                <h3>Curated Selection</h3>
+                <p>Our team hand-picks each item to ensure you get the best styles from around the world.</p>
+            </div>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-globe"></i></div>
+                <h3>Global Community</h3>
+                <p>Connecting fashion lovers across the globe with pieces that tell a story.</p>
+            </div>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-certificate"></i></div>
+                <h3>Authenticity Guaranteed</h3>
+                <p>All products are verified for authenticity and sourced from trusted partners.</p>
+            </div>
+        </div>
+        
+        <div class="about-story">
+            <h2>Our Story</h2>
+            <p>StyleSphere was born from a simple idea: fashion should be accessible, inspiring, and personal. What started as a small passion project has grown into a global marketplace connecting style enthusiasts with the pieces they love.</p>
+            <p style="margin-top: var(--spacing-md);">We believe that style is a form of self-expression. Our mission is to curate a diverse collection that empowers you to find pieces that resonate with your unique personality and lifestyle.</p>
+            <p style="margin-top: var(--spacing-md);">From casual wear to formal attire, from accessories to footwear — every item in our collection is chosen with care and attention to detail.</p>
+            <div style="margin-top: var(--spacing-lg);">
+                <a href="shop.html" class="btn btn-primary btn-pill">Explore Our Collection →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: var(--muted); font-size: 14px;">Premium fashion marketplace curated for style enthusiasts.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: var(--muted); font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: var(--muted); font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+</body>
+</html>

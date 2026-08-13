@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - StyleSphere | Fashion Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .animate-in-delay-1 { animation-delay: 0.1s; }
+        .animate-in-delay-2 { animation-delay: 0.2s; }
+        .animate-in-delay-3 { animation-delay: 0.3s; }
+        .animate-in-delay-4 { animation-delay: 0.4s; }
+        
+        .product-card {
+            animation: slideIn 0.5s ease forwards;
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card .product-img {
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card {
+            transition: all 0.4s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,56,92,0.35);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline:hover {
+            transform: translateY(-2px);
+            border-color: #ff385c;
+            color: #ff385c;
+        }
+        
+        .filter-actions .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-actions .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        select, input {
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            border-color: #ff385c !important;
+            box-shadow: 0 0 0 3px rgba(255,56,92,0.1);
+        }
+
+        /* ===== SHOP LAYOUT ===== */
+        .shop-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            padding: 32px 0;
+        }
+        
+        .sidebar-filters {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .sidebar-filters .filter-group {
+            margin-bottom: 24px;
+        }
+        
+        .sidebar-filters .filter-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #222222;
+        }
+        
+        .sidebar-filters .filter-group select,
+        .sidebar-filters .filter-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-filters .filter-group select:focus,
+        .sidebar-filters .filter-group input:focus {
+            outline: none;
+            border-color: #ff385c;
+            box-shadow: 0 0 0 3px rgba(255,56,92,0.1);
+        }
+        
+        .price-slider {
+            margin: 8px 0;
+        }
+
+        /* ===== PRICE SLIDER (FIXED — no left/right gap) ===== */
+        .price-slider input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: #ddd; /* JS দিয়ে override হবে updatePriceValue() থেকে */
+            cursor: pointer;
+            outline: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .price-slider input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 2px;
+            background: transparent; /* track এর নিজস্ব background সরানো হলো */
+        }
+
+        .price-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ff385c;
+            cursor: pointer;
+            margin-top: -6px; /* thumb কে track এর মাঝ বরাবর align করে */
+            box-shadow: 0 2px 6px rgba(255,56,92,0.4);
+        }
+
+        .price-slider input[type="range"]::-moz-range-track {
+            height: 4px;
+            border-radius: 2px;
+            background: transparent;
+        }
+
+        .price-slider input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ff385c;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(255,56,92,0.4);
+        }
+
+        .price-slider input[type="range"]::-moz-range-progress {
+            height: 4px;
+            border-radius: 2px;
+            background: #ff385c;
+        }
+        
+        .price-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #6a6a6a;
+            margin-top: 4px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-actions .btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #ff385c;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e00b41;
+        }
+        
+        .btn-secondary {
+            background: #f7f7f7;
+            color: #222222;
+            border: 1px solid #dddddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #ebebeb;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #222222;
+            border: 1px solid #dddddd;
+        }
+        
+        .btn-outline:hover {
+            border-color: #ff385c;
+            color: #ff385c;
+        }
+        
+        .btn-pill {
+            border-radius: 9999px;
+            padding: 8px 16px;
+        }
+        
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .shop-header .product-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+        
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        
+        .product-grid .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px;
+            color: #6a6a6a;
+        }
+        
+        .product-grid .loading i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 16px;
+            color: #ff385c;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Product Card */
+        .product-card {
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            animation: slideIn 0.5s ease forwards;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+        }
+        
+        .product-card .product-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        
+        .product-card .product-info {
+            padding: 16px;
+        }
+        
+        .product-card .product-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .product-card .product-meta {
+            font-size: 14px;
+            color: #6a6a6a;
+            margin-bottom: 4px;
+        }
+        
+        .product-card .product-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: #222222;
+            margin: 8px 0;
+        }
+        
+        .product-card .btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 9999px;
+            background: #ff385c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card .btn:hover {
+            background: #e00b41;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,56,92,0.3);
+        }
+        
+        .product-card .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .product-card .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .shop-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-filters {
+                position: static;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            
+            .sidebar-filters .filter-group {
+                margin-bottom: 0;
+            }
+            
+            .filter-actions {
+                grid-column: span 2;
+                flex-direction: row;
+            }
+            
+            .filter-actions .btn {
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sidebar-filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-actions {
+                grid-column: span 1;
+                flex-direction: column;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVIGATION PLACEHOLDER ===== -->
+    <div id="navigation-placeholder"></div>
+
+    <!-- ===== SHOP CONTENT ===== -->
+    <div class="container">
+        <div class="shop-layout">
+            <!-- Sidebar Filters -->
+            <aside class="sidebar-filters">
+                <h3 style="margin-bottom: 24px; font-size: 18px; color: #222222;">Filters</h3>
+                
+                <div class="filter-group">
+                    <label>🔍 Search</label>
+                    <input type="text" id="searchInput" placeholder="Search products..." onkeyup="renderProducts()">
+                </div>
+                
+                <div class="filter-group">
+                    <label>🏷️ Category</label>
+                    <select id="categoryFilter" onchange="renderProducts()">
+                        <option value="">All Categories</option>
+                        <option value="women">Women</option>
+                        <option value="men">Men</option>
+                        <option value="accessories">Accessories</option>
+                        <option value="shoes">Shoes</option>
+                        <option value="bags">Bags</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>💰 Max Price (৳)</label>
+                    <div class="price-slider">
+                        <input type="range" id="priceSlider" min="0" max="10000" value="10000" oninput="updatePriceValue()">
+                        <div class="price-values">
+                            <span>৳0</span>
+                            <span id="priceValue">৳10000</span>
+                            <span>৳10000+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label>📊 Stock Status</label>
+                    <select id="stockFilter" onchange="renderProducts()">
+                        <option value="all">All</option>
+                        <option value="in">In Stock</option>
+                        <option value="low">Low Stock</option>
+                        <option value="out">Out of Stock</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>⭐ Rating</label>
+                    <select id="ratingFilter" onchange="renderProducts()">
+                        <option value="all">All Ratings</option>
+                        <option value="4">4★ & above</option>
+                        <option value="3">3★ & above</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>🎁 Sort By</label>
+                    <select id="sortFilter" onchange="renderProducts()">
+                        <option value="default">Default</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                </div>
+                
+                <div class="filter-actions">
+                    <button class="btn btn-primary" id="applyFilters" onclick="renderProducts()">Apply Filters</button>
+                    <button class="btn btn-secondary" id="resetFilters" onclick="resetFilters()">Reset All</button>
+                </div>
+            </aside>
+            
+            <!-- Products Grid -->
+            <main>
+                <div class="shop-header">
+                    <span class="product-count" id="productCount">Showing 0 products</span>
+                    <div>
+                        <button class="btn btn-outline btn-pill" onclick="goToCompare()" style="font-size: 13px;">
+                            <i class="fas fa-chart-line"></i> Compare
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="product-grid" id="productGrid">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: #929292; font-size: 14px; margin-bottom: 16px;">
+                    Premium fashion marketplace curated for style enthusiasts.
+                </p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: #929292; font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: #929292; font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="js/utils.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // ============================================
+        // SHOP.JS - COMPLETE FIXED VERSION
+        // ============================================
+
+        var products = [];
+        var cart = [];
+        var wishlist = [];
+
+        // --- Fallback Data ---
+        var FALLBACK_PRODUCTS = [
+            { id: 1, name: 'Premium Silk Blouse', brand: 'Luxury Collection', category: 'women', price: 2990, stock: 50, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Silk+Blouse', ratings: 4.8, reviews: 12 },
+            { id: 2, name: 'Wool Blend Coat', brand: 'Urban Classic', category: 'women', price: 4890, stock: 30, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Wool+Coat', ratings: 4.6, reviews: 8 },
+            { id: 3, name: 'Leather Ankle Boots', brand: 'Footwear Co', category: 'shoes', price: 3990, stock: 45, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Leather+Boots', ratings: 4.9, reviews: 15 },
+            { id: 4, name: 'Cashmere Scarf', brand: 'Luxury Collection', category: 'accessories', price: 1890, stock: 60, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Cashmere+Scarf', ratings: 4.7, reviews: 10 },
+            { id: 5, name: 'Cotton T-Shirt', brand: 'Urban Classic', category: 'men', price: 990, stock: 100, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Cotton+T-Shirt', ratings: 4.5, reviews: 7 },
+            { id: 6, name: 'Silk Tie', brand: 'Luxury Collection', category: 'accessories', price: 1290, stock: 75, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Silk+Tie', ratings: 4.8, reviews: 9 },
+            { id: 7, name: 'Wool Suit Jacket', brand: 'Urban Classic', category: 'men', price: 5990, stock: 25, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Wool+Suit', ratings: 4.9, reviews: 14 },
+            { id: 8, name: 'Leather Crossbody Bag', brand: 'Footwear Co', category: 'bags', price: 3490, stock: 40, image: 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=Leather+Bag', ratings: 4.7, reviews: 6 }
+        ];
+
+        // --- Helper Functions ---
+        function getCurrentUser() {
+            var userJson = localStorage.getItem('currentUser');
+            if (!userJson) return null;
+            try { return JSON.parse(userJson); } catch(e) { return null; }
+        }
+
+        function showToast(message, type) {
+            type = type || 'success';
+            var existing = document.querySelectorAll('.toast');
+            for (var i = 0; i < existing.length; i++) { existing[i].remove(); }
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            var bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#ff385c';
+            toast.style.cssText = 'position:fixed; bottom:24px; right:24px; background:' + bgColor + '; color:white; padding:14px 24px; border-radius:50px; z-index:9999; font-family:Inter,sans-serif; font-size:14px; font-weight:500; box-shadow:0 8px 32px rgba(0,0,0,0.15); max-width:400px;';
+            toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle') + '" style="margin-right:10px;"></i> ' + message;
+            document.body.appendChild(toast);
+            setTimeout(function() {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 3500);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getImageUrl(imagePath) {
+            if (!imagePath) return 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=StyleSphere';
+            if (imagePath.startsWith('data:')) return imagePath;
+            if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
+            if (imagePath.startsWith('/uploads/')) return imagePath;
+            if (imagePath.startsWith('uploads/')) return imagePath;
+            return 'https://placehold.co/400x400/e8ddd3/8B5E3C?text=StyleSphere';
+        }
+
+        function getStockStatus(stock) {
+            if (stock > 10) return { class: 'in-stock', text: '✓ In Stock', color: '#10b981' };
+            if (stock > 0) return { class: 'low-stock', text: '⚠ Only ' + stock + ' left', color: '#f59e0b' };
+            return { class: 'out-of-stock', text: '✗ Out of Stock', color: '#ef4444' };
+        }
+
+        function renderStars(rating) {
+            var full = Math.floor(rating || 0);
+            var empty = 5 - full;
+            var stars = '';
+            for (var i = 0; i < full; i++) stars += '★';
+            for (var i = 0; i < empty; i++) stars += '☆';
+            return stars;
+        }
+
+        function requireLogin(actionName, redirectToLogin) {
+            redirectToLogin = (redirectToLogin !== undefined) ? redirectToLogin : true;
+            var user = getCurrentUser();
+            if (!user) {
+                showToast('⚠️ Please login to ' + actionName, 'error');
+                if (redirectToLogin) {
+                    setTimeout(function() { window.location.href = 'login.html'; }, 1500);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        // --- Load Products ---
+        function loadShopData() {
+            var grid = document.getElementById('productGrid');
+            if (grid) {
+                grid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
+            }
+            
+            fetch('api/get-products.php')
+                .then(function(response) { 
+                    if (!response.ok) throw new Error('API not found');
+                    return response.json(); 
+                })
+                .then(function(data) {
+                    if (data.success && data.products && data.products.length > 0) {
+                        products = data.products;
+                        console.log('✅ Loaded ' + products.length + ' products from API');
+                    } else {
+                        useFallbackData();
+                    }
+                    initShop();
+                })
+                .catch(function(error) {
+                    console.warn('API error, using fallback data:', error);
+                    useFallbackData();
+                    initShop();
+                });
+        }
+
+        function useFallbackData() {
+            products = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
+            console.log('✅ Using ' + products.length + ' fallback products');
+            showToast('Using sample products', 'warning');
+        }
+
+        function initShop() {
+            var currentUser = getCurrentUser();
+            if (currentUser) {
+                try {
+                    cart = JSON.parse(localStorage.getItem('attar_cart')) || [];
+                    wishlist = JSON.parse(localStorage.getItem('attar_wishlist')) || [];
+                } catch(e) {}
+            }
+            updateFilters();
+            renderProducts();
+            updateCartCount();
+            updateWishlistCount();
+        }
+
+        // --- Update Filters ---
+        function updateFilters() {
+            var brands = [];
+            var categories = [];
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].brand && brands.indexOf(products[i].brand) === -1) {
+                    brands.push(products[i].brand);
+                }
+                if (products[i].category && categories.indexOf(products[i].category) === -1) {
+                    categories.push(products[i].category);
+                }
+            }
+
+            var categorySelect = document.getElementById('categoryFilter');
+            if (categorySelect) {
+                var html = '<option value="">All Categories</option>';
+                for (var c = 0; c < categories.length; c++) {
+                    html += '<option value="' + escapeHtml(categories[c]) + '">' + escapeHtml(categories[c].charAt(0).toUpperCase() + categories[c].slice(1)) + '</option>';
+                }
+                categorySelect.innerHTML = html;
+            }
+        }
+
+        // --- Update Price Value (FIXED: fills track with exact gradient, no gap) ---
+        function updatePriceValue() {
+            var slider = document.getElementById('priceSlider');
+            var priceValue = document.getElementById('priceValue');
+            if (slider) {
+                var min = parseInt(slider.min) || 0;
+                var max = parseInt(slider.max) || 10000;
+                var val = parseInt(slider.value);
+                var percent = ((val - min) / (max - min)) * 100;
+                slider.style.background = 'linear-gradient(to right, #ff385c 0%, #ff385c ' + percent + '%, #ddd ' + percent + '%, #ddd 100%)';
+            }
+            if (slider && priceValue) {
+                priceValue.innerText = '৳' + slider.value;
+            }
+            renderProducts();
+        }
+
+        // --- Render Products ---
+        function renderProducts() {
+            var searchTerm = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '';
+            var category = document.getElementById('categoryFilter') ? document.getElementById('categoryFilter').value : '';
+            var stockStatus = document.getElementById('stockFilter') ? document.getElementById('stockFilter').value : 'all';
+            var ratingFilter = document.getElementById('ratingFilter') ? document.getElementById('ratingFilter').value : 'all';
+            var sortBy = document.getElementById('sortFilter') ? document.getElementById('sortFilter').value : 'default';
+            var maxPrice = parseInt(document.getElementById('priceSlider') ? document.getElementById('priceSlider').value : 10000);
+
+            var filtered = [];
+            for (var i = 0; i < products.length; i++) {
+                var p = products[i];
+                var match = true;
+                if (searchTerm && !p.name.toLowerCase().includes(searchTerm) && !(p.brand && p.brand.toLowerCase().includes(searchTerm))) match = false;
+                if (category && p.category !== category) match = false;
+                if (p.price > maxPrice) match = false;
+                if (stockStatus === 'in' && p.stock === 0) match = false;
+                if (stockStatus === 'low' && (p.stock === 0 || p.stock > 10)) match = false;
+                if (stockStatus === 'out' && p.stock > 0) match = false;
+                if (ratingFilter !== 'all' && p.ratings < parseInt(ratingFilter)) match = false;
+                if (match) filtered.push(p);
+            }
+
+            if (sortBy === 'price_asc') filtered.sort(function(a, b) { return a.price - b.price; });
+            else if (sortBy === 'price_desc') filtered.sort(function(a, b) { return b.price - a.price; });
+            else if (sortBy === 'rating') filtered.sort(function(a, b) { return b.ratings - a.ratings; });
+            else if (sortBy === 'newest') filtered.sort(function(a, b) { return b.id - a.id; });
+
+            var productCountSpan = document.getElementById('productCount');
+            if (productCountSpan) {
+                productCountSpan.innerHTML = 'Showing ' + filtered.length + ' of ' + products.length + ' products';
+            }
+
+            var grid = document.getElementById('productGrid');
+            if (!grid) return;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; padding:48px; color:#6a6a6a;">No products found 😢</div>';
+                return;
+            }
+
+            var isLoggedIn = getCurrentUser() !== null;
+            var html = '';
+
+            for (var j = 0; j < filtered.length; j++) {
+                var p = filtered[j];
+                var imageUrl = getImageUrl(p.image);
+                var stockInfo = getStockStatus(p.stock);
+                var ratingNum = parseFloat(p.ratings) || 0;
+                var stars = renderStars(ratingNum);
+                
+                html += '<div class="product-card" onclick="viewProduct(' + p.id + ')">';
+                
+                // Badges
+                if (p.stock === 0) {
+                    html += '<div style="position:absolute; top:12px; left:12px; background:#ef4444; color:white; padding:2px 12px; border-radius:9999px; font-size:11px; font-weight:600; z-index:2;">Sold Out</div>';
+                }
+                if (ratingNum >= 4.5) {
+                    html += '<div style="position:absolute; top:12px; left:12px; background:#222; color:white; padding:2px 12px; border-radius:9999px; font-size:11px; font-weight:600; z-index:2;">⭐ Guest Favorite</div>';
+                }
+                
+                // Action buttons
+                html += '<div style="position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:2;">';
+                html += '<button onclick="event.stopPropagation(); addToWishlist(' + p.id + ')" style="background:white; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);"><i class="far fa-heart"></i></button>';
+                html += '<button onclick="event.stopPropagation(); addToCompare(' + p.id + ')" style="background:white; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);"><i class="fas fa-chart-line"></i></button>';
+                html += '</div>';
+                
+                // Image
+                html += '<img class="product-img" src="' + imageUrl + '" onclick="viewProduct(' + p.id + ')" onerror="this.src=\'https://placehold.co/400x400/e8ddd3/8B5E3C?text=StyleSphere\'">';
+                
+                // Info
+                html += '<div class="product-info" onclick="viewProduct(' + p.id + ')">';
+                html += '<div class="product-title">' + escapeHtml(p.name) + '</div>';
+                html += '<div class="product-meta">' + escapeHtml(p.brand || '') + (p.category ? ' | ' + escapeHtml(p.category) : '') + '</div>';
+                html += '<div style="font-size:14px; margin-bottom:4px;">' + stars + ' <span style="font-weight:600; margin-left:4px;">' + ratingNum.toFixed(1) + '</span></div>';
+                html += '<div class="product-price">৳' + parseFloat(p.price).toLocaleString() + '</div>';
+                html += '<div style="font-size:13px; color:' + stockInfo.color + ';">' + stockInfo.text + '</div>';
+                
+                if (p.stock > 0) {
+                    html += '<button class="btn" onclick="event.stopPropagation(); addToCart(' + p.id + ')"><i class="fas fa-shopping-bag"></i> ' + (isLoggedIn ? 'Add to Cart' : 'Login to Add') + '</button>';
+                } else {
+                    html += '<button class="btn btn-secondary" onclick="event.stopPropagation(); showStockAlert(' + p.id + ')"><i class="fas fa-bell"></i> Notify Me</button>';
+                }
+                
+                html += '</div>';
+                html += '</div>';
+            }
+
+            grid.innerHTML = html;
+        }
+
+        // --- Cart Functions ---
+        function addToCart(productId) {
+            if (!requireLogin('add items to cart')) return;
+            
+            var product = null;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id === productId) { product = products[i]; break; }
+            }
+            if (!product) { showToast('Product not found', 'error'); return; }
+            if (product.stock === 0) { showStockAlert(productId); return; }
+            
+            var currentCart = [];
+            try { currentCart = JSON.parse(localStorage.getItem('attar_cart')) || []; } catch(e) {}
+            
+            var item = null;
+            for (var j = 0; j < currentCart.length; j++) {
+                if (currentCart[j].id === productId) { item = currentCart[j]; break; }
+            }
+            
+            if (item) {
+                if (item.quantity < product.stock) {
+                    item.quantity++;
+                } else {
+                    showToast('Not enough stock available!', 'error');
+                    return;
+                }
+            } else {
+                currentCart.push({ id: productId, quantity: 1 });
+            }
+            
+            localStorage.setItem('attar_cart', JSON.stringify(currentCart));
+            updateNavCartCount();
+            updateCartCount();
+            showToast(product.name + ' added to cart!');
+        }
+
+        function addToWishlist(productId) {
+            if (!requireLogin('add items to wishlist')) return;
+            
+            var product = null;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id === productId) { product = products[i]; break; }
+            }
+            
+            var currentWishlist = [];
+            try { currentWishlist = JSON.parse(localStorage.getItem('attar_wishlist')) || []; } catch(e) {}
+            
+            var exists = false;
+            for (var j = 0; j < currentWishlist.length; j++) {
+                if (currentWishlist[j] === productId) { exists = true; break; }
+            }
+            
+            if (!exists) {
+                currentWishlist.push(productId);
+                localStorage.setItem('attar_wishlist', JSON.stringify(currentWishlist));
+                updateNavWishlistCount();
+                updateWishlistCount();
+                showToast(product ? product.name + ' added to wishlist! ❤️' : 'Added to wishlist!');
+            } else {
+                showToast('Already in wishlist');
+            }
+        }
+
+        function addToCompare(productId) {
+            if (!requireLogin('compare products')) return;
+            
+            var compareList = [];
+            try { compareList = JSON.parse(localStorage.getItem('attar_compare')) || []; } catch(e) {}
+            
+            var exists = false;
+            for (var i = 0; i < compareList.length; i++) {
+                if (compareList[i] === productId) { exists = true; break; }
+            }
+            
+            if (exists) {
+                showToast('Already in compare list');
+                return;
+            }
+            if (compareList.length >= 4) {
+                showToast('Can compare up to 4 products only');
+                return;
+            }
+            
+            compareList.push(productId);
+            localStorage.setItem('attar_compare', JSON.stringify(compareList));
+            showToast('Added to compare!');
+        }
+
+        function goToCompare() {
+            var compareList = [];
+            try { compareList = JSON.parse(localStorage.getItem('attar_compare')) || []; } catch(e) {}
+            if (compareList.length === 0) {
+                showToast('No products in compare list. Add some products first!');
+                return;
+            }
+            window.location.href = 'compare.html';
+        }
+
+        function viewProduct(productId) {
+            localStorage.setItem('viewProductId', productId);
+            window.location.href = 'products.html';
+        }
+
+        function showStockAlert(productId) {
+            var product = null;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id === productId) { product = products[i]; break; }
+            }
+            if (!product) return;
+            
+            var email = prompt('Notify me when "' + product.name + '" is back in stock.\n\nEnter your email:');
+            if (email && email.indexOf('@') !== -1) {
+                var waitlist = [];
+                try { waitlist = JSON.parse(localStorage.getItem('stock_waitlist')) || []; } catch(e) {}
+                waitlist.push({
+                    productId: product.id,
+                    productName: product.name,
+                    email: email,
+                    date: new Date().toISOString(),
+                    notified: false
+                });
+                localStorage.setItem('stock_waitlist', JSON.stringify(waitlist));
+                showToast("We'll notify you when " + product.name + " is back!");
+            }
+        }
+
+        // --- Update Counts ---
+        function updateCartCount() {
+            var count = 0;
+            try {
+                var cart = JSON.parse(localStorage.getItem('attar_cart')) || [];
+                for (var i = 0; i < cart.length; i++) {
+                    count += (cart[i].quantity || 1);
+                }
+            } catch(e) {}
+            var el = document.getElementById('cartCount');
+            if (el) el.textContent = count;
+        }
+
+        function updateWishlistCount() {
+            var count = 0;
+            try {
+                var wishlist = JSON.parse(localStorage.getItem('attar_wishlist')) || [];
+                count = wishlist.length;
+            } catch(e) {}
+            var el = document.getElementById('wishlistCount');
+            if (el) el.textContent = count;
+        }
+
+        // --- Reset Filters ---
+        function resetFilters() {
+            var searchInput = document.getElementById('searchInput');
+            var categoryFilter = document.getElementById('categoryFilter');
+            var stockFilter = document.getElementById('stockFilter');
+            var ratingFilter = document.getElementById('ratingFilter');
+            var sortFilter = document.getElementById('sortFilter');
+            var priceSlider = document.getElementById('priceSlider');
+            var priceValue = document.getElementById('priceValue');
+
+            if (searchInput) searchInput.value = '';
+            if (categoryFilter) categoryFilter.value = '';
+            if (stockFilter) stockFilter.value = 'all';
+            if (ratingFilter) ratingFilter.value = 'all';
+            if (sortFilter) sortFilter.value = 'default';
+            if (priceSlider) {
+                priceSlider.value = '10000';
+                if (priceValue) priceValue.innerText = '৳10000';
+            }
+            updatePriceValue();
+        }
+
+        // --- DOM Ready ---
+        document.addEventListener('DOMContentLoaded', function() {
+            loadShopData();
+            updatePriceValue(); // initial slider fill সেট করার জন্য (gap ছাড়া)
+        });
+
+        // --- Expose Globally ---
+        window.addToCart = addToCart;
+        window.addToWishlist = addToWishlist;
+        window.addToCompare = addToCompare;
+        window.goToCompare = goToCompare;
+        window.viewProduct = viewProduct;
+        window.showStockAlert = showStockAlert;
+        window.renderProducts = renderProducts;
+        window.loadShopData = loadShopData;
+        window.updatePriceValue = updatePriceValue;
+        window.resetFilters = resetFilters;
+        window.updateCartCount = updateCartCount;
+        window.updateWishlistCount = updateWishlistCount;
+    </script>
+</body>
+</html>

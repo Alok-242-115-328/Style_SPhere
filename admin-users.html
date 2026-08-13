@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .admin-header h1 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .admin-toolbar {
+            display: flex;
+            gap: var(--spacing-base);
+            flex-wrap: wrap;
+        }
+        
+        .admin-toolbar input {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .admin-toolbar input:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .admin-toolbar select {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            background: var(--canvas);
+            font-size: 14px;
+        }
+        
+        .users-table-wrap {
+            overflow-x: auto;
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        
+        .users-table th,
+        .users-table td {
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--hairline-soft);
+        }
+        
+        .users-table th {
+            background: var(--surface-soft);
+            font-weight: var(--font-weight-semibold);
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .users-table .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .users-table .role-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .role-badge.admin { background: #9c27b0; color: white; }
+        .role-badge.user { background: var(--success); color: white; }
+        
+        .users-table .actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+        }
+        
+        .users-table .actions .btn-sm {
+            padding: 0.3rem 0.6rem;
+            font-size: 11px;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal-card {
+            background: var(--canvas);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-card .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .modal-card .modal-header h2 {
+            font-size: 20px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .modal-card .modal-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        
+        .modal-card .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .modal-card .form-group label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .modal-card .form-group input,
+        .modal-card .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family);
+            font-size: 14px;
+        }
+        
+        .modal-card .form-group input:focus,
+        .modal-card .form-group select:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .modal-card .form-actions {
+            display: flex;
+            gap: var(--spacing-base);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .modal-card .form-actions .btn {
+            flex: 1;
+        }
+        
+        .empty-users {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--muted);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-toolbar {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .admin-toolbar input {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab" onclick="window.location.href='admin-dashboard.html'">
+                <span class="tab-icon">📊</span>
+                Dashboard
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-products.html'">
+                <span class="tab-icon">📦</span>
+                Products
+            </div>
+            <div class="top-nav-tab" onclick="window.location.href='admin-orders.html'">
+                <span class="tab-icon">📋</span>
+                Orders
+            </div>
+            <div class="top-nav-tab active">
+                <span class="tab-icon">👥</span>
+                Users
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='admin-settings.html'">
+                <i class="fas fa-cog"></i>
+            </button>
+            <div class="user-avatar" onclick="if(confirm('Logout?')){localStorage.removeItem('currentUser');window.location.href='index.html';}">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== USERS CONTENT ===== -->
+    <div class="container">
+        <div class="admin-header">
+            <h1>👥 Manage Users</h1>
+            <div class="admin-toolbar">
+                <input type="text" id="searchUsers" placeholder="🔍 Search by name or email...">
+                <select id="roleFilter">
+                    <option value="all">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">Customer</option>
+                </select>
+                <button class="btn btn-primary" onclick="openUserModal()">
+                    <i class="fas fa-plus"></i> Add User
+                </button>
+            </div>
+        </div>
+        
+        <div class="users-table-wrap">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Contact</th>
+                        <th>Role</th>
+                        <th>Orders</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr><td colspan="6" style="text-align:center; padding: var(--spacing-xxl); color: var(--muted);">
+                        <i class="fas fa-spinner fa-spin"></i> Loading users...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== USER MODAL ===== -->
+    <div id="userModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="userModalTitle">Add User</h2>
+                <button class="close-btn" onclick="closeUserModal()">&times;</button>
+            </div>
+            <form id="userForm" onsubmit="event.preventDefault(); saveUser();">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="userPassword" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="userPhone">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="userRole">
+                        <option value="user">Customer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let allUsers = [];
+        let allOrders = [];
+        let currentAdmin = null;
+
+        function checkAdminAccess() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return false; }
+            if (user.role !== 'admin') { window.location.href = 'index.html'; return false; }
+            currentAdmin = user;
+            return true;
+        }
+
+        async function loadUsers() {
+            if (!checkAdminAccess()) return;
+
+            try {
+                const [usersRes, ordersRes] = await Promise.all([
+                    fetch('api/get-users.php'),
+                    fetch('api/get-orders.php')
+                ]);
+
+                const usersData = await usersRes.json();
+                const ordersData = await ordersRes.json();
+
+                if (usersData.success) allUsers = usersData.users;
+                if (ordersData.success) allOrders = ordersData.orders;
+
+                renderUsers();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to load users');
+            }
+        }
+
+        function renderUsers() {
+            const searchTerm = document.getElementById('searchUsers')?.value.toLowerCase() || '';
+            const roleFilter = document.getElementById('roleFilter')?.value || 'all';
+
+            let filtered = allUsers.filter(user => {
+                if (searchTerm && !user.name.toLowerCase().includes(searchTerm) && !user.email.toLowerCase().includes(searchTerm)) return false;
+                if (roleFilter !== 'all' && user.role !== roleFilter) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById('usersTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:var(--spacing-xxl); color: var(--muted);">No users found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(user => {
+                const userOrders = allOrders.filter(o => o.customer_email === user.email);
+                const initial = (user.name?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase();
+                
+                return `
+                    <tr>
+                        <td>
+                            <span class="user-avatar">${initial}</span>
+                            <span style="font-weight:var(--font-weight-medium); margin-left: var(--spacing-sm);">${escapeHtml(user.name)}</span><br>
+                            <span style="font-size:12px; color:var(--muted); margin-left: 48px;">${escapeHtml(user.email)}</span>
+                        </td>
+                        <td>${user.phone || '—'}</td>
+                        <td><span class="role-badge ${user.role}">${user.role === 'admin' ? '👑 Admin' : '👤 Customer'}</span></td>
+                        <td>${userOrders.length} orders</td>
+                        <td>${user.created_at ? formatDate(user.created_at) : '—'}</td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn btn-secondary btn-sm" onclick="editUser('${user.id}')"><i class="fas fa-edit"></i></button>
+                                ${user.email !== currentAdmin?.email ? 
+                                    `<button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>` :
+                                    '<span style="font-size:11px; color:var(--muted);">You</span>'
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openUserModal(user = null) {
+            document.getElementById('userModal').classList.add('open');
+            document.getElementById('userModalTitle').innerText = user ? 'Edit User' : 'Add User';
+            document.getElementById('userId').value = user?.id || '';
+            document.getElementById('userName').value = user?.name || '';
+            document.getElementById('userEmail').value = user?.email || '';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userPhone').value = user?.phone || '';
+            document.getElementById('userRole').value = user?.role || 'user';
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('open');
+            document.getElementById('userForm').reset();
+        }
+
+        function editUser(id) {
+            const user = allUsers.find(u => u.id == id);
+            if (user) openUserModal(user);
+        }
+
+        async function saveUser() {
+            const id = document.getElementById('userId').value;
+            const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
+            const password = document.getElementById('userPassword').value;
+            const phone = document.getElementById('userPhone').value.trim();
+            const role = document.getElementById('userRole').value;
+
+            if (!name || !email) {
+                showToast('Please fill all required fields');
+                return;
+            }
+
+            try {
+                const url = id ? 'api/update-user.php' : 'api/register.php';
+                const body = id ? { id, name, email, phone, role, password: password || undefined } 
+                               : { name, email, password, phone, role };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(result.message || 'User saved');
+                    closeUserModal();
+                    loadUsers();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to save user');
+            }
+        }
+
+        async function deleteUser(id) {
+            const user = allUsers.find(u => u.id == id);
+            if (!user) return;
+            if (user.email === currentAdmin?.email) {
+                showToast('You cannot delete your own account');
+                return;
+            }
+            if (!confirm(`Delete user "${user.name}"?`)) return;
+
+            try {
+                const response = await fetch('api/delete-user.php', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('User deleted');
+                    loadUsers();
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to delete user');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchUsers')?.addEventListener('keyup', renderUsers);
+        document.getElementById('roleFilter')?.addEventListener('change', renderUsers);
+
+        window.openUserModal = openUserModal;
+        window.closeUserModal = closeUserModal;
+        window.editUser = editUser;
+        window.saveUser = saveUser;
+        window.deleteUser = deleteUser;
+
+        document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>

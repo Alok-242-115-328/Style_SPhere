@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - StyleSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-container {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .dashboard-welcome {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-active) 100%);
+            color: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .dashboard-welcome h1 {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .dashboard-welcome p {
+            opacity: 0.9;
+            margin-top: var(--spacing-xs);
+        }
+        
+        .dashboard-welcome .tier-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: var(--font-weight-bold);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            margin-top: var(--spacing-sm);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-base);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .stat-card {
+            background: var(--canvas);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .stat-card .stat-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .dashboard-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--hairline-soft);
+            margin-bottom: var(--spacing-xl);
+            overflow-x: auto;
+        }
+        
+        .dashboard-tab {
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-size: 15px;
+        }
+        
+        .dashboard-tab.active {
+            color: var(--ink);
+            border-bottom-color: var(--ink);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .order-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-base);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-base);
+        }
+        
+        .order-card .order-info {
+            flex: 1;
+        }
+        
+        .order-card .order-info .order-id {
+            font-weight: var(--font-weight-bold);
+            font-size: 16px;
+        }
+        
+        .order-card .order-info .order-date {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        
+        .order-card .order-info .order-items {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: var(--spacing-xs);
+        }
+        
+        .order-card .order-status {
+            padding: 0.2rem 0.8rem;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .order-status.processing { background: var(--warning); color: #333; }
+        .order-status.shipped { background: var(--info); color: white; }
+        .order-status.delivered { background: var(--success); color: white; }
+        .order-status.cancelled { background: var(--danger); color: white; }
+        
+        .order-card .order-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .profile-form .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .profile-form .form-group label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .profile-form .form-group input,
+        .profile-form .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family);
+            font-size: 14px;
+        }
+        
+        .profile-form .form-group input:focus,
+        .profile-form .form-group textarea:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        
+        .profile-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-base);
+        }
+        
+        .profile-card {
+            background: var(--canvas);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .profile-card h3 {
+            font-size: 18px;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-welcome h1 {
+                font-size: 22px;
+            }
+            
+            .order-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .profile-form .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            Style<span>Sphere</span>
+        </div>
+        <div class="top-nav-tabs">
+            <div class="top-nav-tab active">
+                <span class="tab-icon">👗</span>
+                Fashion
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">🎨</span>
+                Collections
+                <span class="new-tag">NEW</span>
+            </div>
+            <div class="top-nav-tab">
+                <span class="tab-icon">✨</span>
+                Styling
+                <span class="new-tag">NEW</span>
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <button class="btn-icon" onclick="window.location.href='wishlist.html'">
+                <i class="far fa-heart"></i>
+                <span id="wishlistCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <button class="btn-icon" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" style="font-size:10px; position:absolute; top:-4px; right:-4px; background:var(--primary); color:white; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">0</span>
+            </button>
+            <div id="userMenu">
+                <div class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== DASHBOARD CONTENT ===== -->
+    <div class="container">
+        <div class="dashboard-container" id="dashboardContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading dashboard...</div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>StyleSphere</h4>
+                <p style="color: var(--muted); font-size: 14px;">Premium fashion marketplace curated for style enthusiasts.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="shop.html">All Products</a>
+                <a href="shop.html?category=women">Women</a>
+                <a href="shop.html?category=men">Men</a>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <a href="order-tracking.html">Track Order</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <p style="color: var(--muted); font-size: 14px;">Dhaka, Bangladesh</p>
+                <p style="color: var(--muted); font-size: 14px;">+880 1234 567890</p>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <span>© 2026 StyleSphere, Inc. All rights reserved.</span>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+        let currentUser = null;
+        let allOrders = [];
+        let userTier = 'Bronze';
+        let tierDiscount = 0;
+        let totalSpent = 0;
+
+        async function loadDashboard() {
+            currentUser = getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            if (currentUser.role === 'admin') {
+                window.location.href = 'admin-dashboard.html';
+                return;
+            }
+
+            try {
+                // Load orders
+                const orderResponse = await fetch('api/get-orders.php');
+                const orderData = await orderResponse.json();
+                if (orderData.success) {
+                    allOrders = orderData.orders.filter(o => o.customer_email === currentUser.email);
+                }
+
+                // Load tier
+                const tierResponse = await fetch(`api/get-user-tier.php?email=${encodeURIComponent(currentUser.email)}`);
+                const tierData = await tierResponse.json();
+                if (tierData.success) {
+                    userTier = tierData.tier;
+                    tierDiscount = tierData.discount;
+                    totalSpent = tierData.total_spent || 0;
+                }
+
+                renderDashboard();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error loading dashboard');
+            }
+        }
+
+        function getTierClass(tier) {
+            const classes = {
+                'Bronze': 'bronze',
+                'Silver': 'silver',
+                'Gold': 'gold',
+                'Platinum': 'platinum'
+            };
+            return classes[tier] || 'bronze';
+        }
+
+        function getTierIcon(tier) {
+            const icons = {
+                'Bronze': '🥉',
+                'Silver': '🥈',
+                'Gold': '🥇',
+                'Platinum': '💎'
+            };
+            return icons[tier] || '🥉';
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('dashboardContainer');
+            const wishlist = JSON.parse(localStorage.getItem('attar_wishlist')) || [];
+            const cart = JSON.parse(localStorage.getItem('attar_cart')) || [];
+
+            const tierClass = getTierClass(userTier);
+            const tierIcon = getTierIcon(userTier);
+
+            container.innerHTML = `
+                <div class="dashboard-welcome">
+                    <h1>Welcome back, ${escapeHtml(currentUser.name)}!</h1>
+                    <p>Your style journey continues at StyleSphere</p>
+                    <span class="tier-badge">${tierIcon} ${userTier} Member • ${tierDiscount}% discount</span>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="stat-number">${allOrders.length}</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-taka-sign"></i></div>
+                        <div class="stat-number">৳${totalSpent.toLocaleString()}</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                        <div class="stat-number">${wishlist.length}</div>
+                        <div class="stat-label">Wishlist</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-number">${cart.length}</div>
+                        <div class="stat-label">Cart Items</div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-tabs">
+                    <button class="dashboard-tab active" onclick="switchTab('orders')">📦 Orders</button>
+                    <button class="dashboard-tab" onclick="switchTab('profile')">👤 Profile</button>
+                    <button class="dashboard-tab" onclick="switchTab('security')">🔒 Security</button>
+                </div>
+                
+                <div id="ordersTab" class="tab-content active">
+                    ${allOrders.length === 0 ? `
+                        <div style="text-align:center; padding: var(--spacing-xxl); color: var(--muted);">
+                            <i class="fas fa-shopping-bag" style="font-size:48px; color: var(--hairline); margin-bottom: var(--spacing-md);"></i>
+                            <h3>No orders yet</h3>
+                            <p>Start exploring our collections and make your first purchase!</p>
+                            <a href="shop.html" class="btn btn-primary btn-pill" style="margin-top: var(--spacing-md);">Shop Now →</a>
+                        </div>
+                    ` : allOrders.map(order => `
+                        <div class="order-card">
+                            <div class="order-info">
+                                <div class="order-id">#${escapeHtml(order.order_number || order.id)}</div>
+                                <div class="order-date">${formatDate(order.created_at)}</div>
+                                <div class="order-items">${order.items ? JSON.parse(order.items).length : 0} items • ৳${parseFloat(order.total).toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <span class="order-status ${(order.status || 'processing').toLowerCase()}">${order.status || 'Processing'}</span>
+                            </div>
+                            <div class="order-actions">
+                                <button class="btn btn-secondary btn-pill" style="font-size:12px; padding:0.3rem 0.8rem;" onclick="trackOrder('${order.order_number || order.id}')">Track</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div id="profileTab" class="tab-content">
+                    <div class="profile-card">
+                        <h3>Profile Information</h3>
+                        <form class="profile-form" onsubmit="event.preventDefault(); updateProfile();">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="profileName" value="${escapeHtml(currentUser.name)}">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="profileEmail" value="${escapeHtml(currentUser.email)}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="profilePhone" value="${escapeHtml(currentUser.phone || '')}">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea id="profileAddress" rows="2">${escapeHtml(currentUser.address || '')}</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>City</label>
+                                    <input type="text" id="profileCity" value="${escapeHtml(currentUser.city || '')}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Postal Code</label>
+                                    <input type="text" id="profilePostalCode" value="${escapeHtml(currentUser.postal_code || '')}">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="securityTab" class="tab-content">
+                    <div class="profile-card">
+                        <h3>Change Password</h3>
+                        <form class="profile-form" onsubmit="event.preventDefault(); changePassword();">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" id="currentPassword" placeholder="Enter current password">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" id="newPasswordChange" placeholder="Min 6 characters">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" id="confirmPasswordChange" placeholder="Confirm new password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                        </form>
+                    </div>
+                    
+                    <div class="profile-card">
+                        <h3>Account Actions</h3>
+                        <button class="btn btn-secondary" onclick="if(confirm('Logout?')) { localStorage.removeItem('currentUser'); window.location.href='index.html'; }">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`.dashboard-tab[onclick*="${tab}"]`).classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        function trackOrder(orderId) {
+            window.location.href = `order-tracking.html?order=${orderId}`;
+        }
+
+        async function updateProfile() {
+            const name = document.getElementById('profileName').value.trim();
+            const phone = document.getElementById('profilePhone').value.trim();
+            const address = document.getElementById('profileAddress').value.trim();
+            const city = document.getElementById('profileCity').value.trim();
+            const postal_code = document.getElementById('profilePostalCode').value.trim();
+
+            if (!name) { showToast('Please enter your name'); return; }
+
+            try {
+                const response = await fetch('api/update-user.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: currentUser.id,
+                        name, email: currentUser.email, phone, address, city, postal_code,
+                        role: currentUser.role
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    currentUser.name = name;
+                    currentUser.phone = phone;
+                    currentUser.address = address;
+                    currentUser.city = city;
+                    currentUser.postal_code = postal_code;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showToast('Profile updated!');
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to update profile');
+            }
+        }
+
+        async function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPasswordChange').value;
+            const confirm = document.getElementById('confirmPasswordChange').value;
+
+            if (!newPass || !confirm) { showToast('Please enter new password'); return; }
+            if (newPass.length < 6) { showToast('Password must be 6+ characters'); return; }
+            if (newPass !== confirm) { showToast('Passwords do not match'); return; }
+
+            try {
+                // Verify current password first
+                const verify = await fetch('api/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentUser.email, password: current })
+                });
+                const verifyResult = await verify.json();
+                if (!verifyResult.success) {
+                    showToast('Current password is incorrect');
+                    return;
+                }
+
+                const response = await fetch('api/quick-login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentUser.email, password: newPass, action: 'set_password' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Password changed successfully!');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordChange').value = '';
+                    document.getElementById('confirmPasswordChange').value = '';
+                } else {
+                    showToast('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to change password');
+            }
+        }
+
+        window.switchTab = switchTab;
+        window.trackOrder = trackOrder;
+        window.updateProfile = updateProfile;
+        window.changePassword = changePassword;
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
