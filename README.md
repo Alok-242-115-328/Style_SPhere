@@ -1,5 +1,6 @@
 # Style_SPhere
-# Style_SPhere
+## 👥 Group number :6
+
 ## 👥 Team Members
 
 | Name | ID | Contribution |
